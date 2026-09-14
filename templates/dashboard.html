@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+
+<h1 class="page-title">
+    Car Rental Dashboard
+</h1>
+
+<p>
+    Overview of your vehicle rental business.
+</p>
+
+
+<div class="dashboard-grid">
+
+    <a
+        href="{% url 'car_status' 'available' %}"
+        class="dashboard-card"
+    >
+
+        <h2>
+            Available Cars
+        </h2>
+
+        <div class="dashboard-number">
+            {{ available_cars }}
+        </div>
+
+        <p>
+            Ready for rental
+        </p>
+
+    </a>
+
+
+    <a
+        href="{% url 'car_status' 'rented' %}"
+        class="dashboard-card"
+    >
+
+        <h2>
+            Rented Cars
+        </h2>
+
+        <div class="dashboard-number">
+            {{ rented_cars }}
+        </div>
+
+        <p>
+            Currently with customers
+        </p>
+
+    </a>
+
+
+    <a
+        href="{% url 'car_status' 'returned' %}"
+        class="dashboard-card"
+    >
+
+        <h2>
+            Returned Cars
+        </h2>
+
+        <div class="dashboard-number">
+            {{ returned_cars }}
+        </div>
+
+        <p>
+            Awaiting inspection
+        </p>
+
+    </a>
+
+
+    <a
+        href="{% url 'car_status' 'maintenance' %}"
+        class="dashboard-card"
+    >
+
+        <h2>
+            Maintenance
+        </h2>
+
+        <div class="dashboard-number">
+            {{ maintenance_cars }}
+        </div>
+
+        <p>
+            Not available for rental
+        </p>
+
+    </a>
+
+</div>
+
+
+<div class="dashboard-summary">
+
+    <div class="summary-card">
+
+        <h3>
+            Total Cars
+        </h3>
+
+        <strong>
+            {{ total_cars }}
+        </strong>
+
+    </div>
+
+
+    <div class="summary-card">
+
+        <h3>
+            Active Rentals
+        </h3>
+
+        <strong>
+            {{ active_rentals }}
+        </strong>
+
+    </div>
+
+</div>
+
+
+<h2 class="section-title">
+    Recent Rentals
+</h2>
+
+
+<div class="table-container">
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Customer
+                </th>
+
+                <th>
+                    Car
+                </th>
+
+                <th>
+                    Rental Date
+                </th>
+
+                <th>
+                    Return Date
+                </th>
+
+                <th>
+                    Status
+                </th>
+
+                <th>
+                    Action
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+        {% for rental in recent_rentals %}
+
+            <tr>
+
+                <td>
+                    {{ rental.customer }}
+                </td>
+
+                <td>
+                    {{ rental.car }}
+                </td>
+
+                <td>
+                    {{ rental.rental_date }}
+                </td>
+
+                <td>
+                    {{ rental.expected_return_date }}
+                </td>
+
+                <td>
+                    {{ rental.get_status_display }}
+                </td>
+
+                <td>
+
+                    <a
+                        href="{% url 'rental_detail' rental.pk %}"
+                    >
+                        View
+                    </a>
+
+                </td>
+
+            </tr>
+
+        {% empty %}
+
+            <tr>
+
+                <td colspan="6">
+                    No rentals yet.
+                </td>
+
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

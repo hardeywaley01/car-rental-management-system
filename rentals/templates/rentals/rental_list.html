@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Rentals
+{% endblock %}
+
+
+{% block content %}
+
+<h1 class="page-title">
+    Rentals
+</h1>
+<div class="card">
+
+    <form method="GET">
+
+        <input
+            type="text"
+            name="search"
+            placeholder="Search customer, car or plate..."
+            value="{{ search }}"
+        >
+
+        <select name="status">
+
+            <option value="">
+                All Rentals
+            </option>
+
+            <option value="active"
+                {% if status == "active" %}selected{% endif %}>
+                Active
+            </option>
+
+            <option value="returned"
+                {% if status == "returned" %}selected{% endif %}>
+                Returned
+            </option>
+
+        </select>
+
+        <button type="submit" class="btn">
+            Search
+        </button>
+
+        <a href="{% url 'rental_list' %}" class="btn">
+            Clear
+        </a>
+
+    </form>
+
+</div>
+<form method="GET">
+
+    <input
+        type="text"
+        name="search"
+        placeholder="Search rental..."
+        value="{{ search }}"
+    >
+
+    <button type="submit" class="btn">
+        Search
+    </button>
+
+</form>
+
+<br>
+<a
+    class="btn"
+    href="{% url 'rental_create' %}"
+>
+    + Create Rental
+</a>
+
+
+<br>
+<br>
+
+
+{% for rental in rentals %}
+
+<div class="card">
+
+    <h2>
+        {{ rental.car.brand }}
+        {{ rental.car.model }}
+    </h2>
+
+    <p>
+        <strong>Customer:</strong>
+        {{ rental.customer.full_name }}
+    </p>
+
+    <p>
+        <strong>Rental Date:</strong>
+        {{ rental.rental_date }}
+    </p>
+
+    <p>
+        <strong>Expected Return:</strong>
+        {{ rental.expected_return_date }}
+    </p>
+
+    <p>
+        <strong>Status:</strong>
+        {{ rental.get_status_display }}
+    </p>
+
+    <p>
+        <strong>Total:</strong>
+        ₦{{ rental.total_cost }}
+    </p>
+
+
+    {% if rental.status == "active" %}
+
+        <a
+            class="btn"
+            href="{% url 'rental_return' rental.pk %}"
+        >
+            Return Car
+        </a>
+
+    {% endif %}
+
+                <a
+            class="btn"
+            href="{% url 'rental_detail' rental.pk %}"
+        >
+            View Details
+        </a>
+
+        <a
+            class="btn"
+            href="{% url 'rental_receipt' rental.pk %}"
+        >
+            Print Receipt
+        </a>
+    {% if rental.status == "returned" %}
+
+        <a
+            class="btn"
+            href="{% url 'inspect_car' rental.pk %}"
+        >
+            Inspect Car
+        </a>
+
+    {% endif %}
+
+</div>
+
+<br>
+
+
+{% empty %}
+
+<p>
+    No rentals found.
+</p>
+
+{% endfor %}
+
+{% endblock %}

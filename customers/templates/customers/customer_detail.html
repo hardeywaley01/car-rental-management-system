@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}
+Customer Details
+{% endblock %}
+
+{% block content %}
+
+<h1 class="page-title">
+    Customer Details
+</h1>
+
+<div class="card">
+
+    <h2>{{ customer.full_name }}</h2>
+
+    <p>
+        <strong>Phone:</strong>
+        {{ customer.phone }}
+    </p>
+
+    <p>
+        <strong>Email:</strong>
+        {{ customer.email|default:"Not provided" }}
+    </p>
+
+    <p>
+        <strong>Address:</strong>
+        {{ customer.address|default:"Not provided" }}
+    </p>
+
+    <p>
+        <strong>Driver License:</strong>
+        {{ customer.driver_license }}
+    </p>
+
+    <p>
+        <strong>Customer Since:</strong>
+        {{ customer.created_at|date:"d M Y" }}
+    </p>
+
+    <br>
+
+    <a
+        href="{% url 'customer_edit' customer.pk %}"
+        class="btn"
+    >
+        Edit Customer
+    </a>
+
+    <a
+        href="{% url 'customer_delete' customer.pk %}"
+        class="btn"
+    >
+        Delete Customer
+    </a>
+
+    <a
+        href="{% url 'customer_list' %}"
+        class="btn"
+    >
+        Back to Customers
+    </a>
+
+</div>
+
+
+<br>
+
+
+<div class="card">
+
+    <h2>Rental History</h2>
+
+    <br>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Car</th>
+                <th>Rental Date</th>
+                <th>Expected Return</th>
+                <th>Actual Return</th>
+                <th>Total Cost</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for rental in rentals %}
+
+            <tr>
+
+                <td>
+                    {{ rental.car.brand }}
+                    {{ rental.car.model }}
+                </td>
+
+                <td>
+                    {{ rental.rental_date }}
+                </td>
+
+                <td>
+                    {{ rental.expected_return_date }}
+                </td>
+
+                <td>
+                    {{ rental.actual_return_date|default:"Not returned" }}
+                </td>
+
+                <td>
+                    ₦{{ rental.total_cost }}
+                </td>
+
+                <td>
+                    {{ rental.get_status_display }}
+                </td>
+
+                <td>
+                    <a
+                        href="{% url 'rental_detail' rental.pk %}"
+                        class="btn"
+                    >
+                        View
+                    </a>
+                </td>
+
+            </tr>
+
+        {% empty %}
+
+            <tr>
+                <td colspan="7">
+                    This customer has no rental history.
+                </td>
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

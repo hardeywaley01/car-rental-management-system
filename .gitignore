@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.renter/
+venv/
+.venv/
+env/
+
+# Django
+*.log
+
+# Environment variables / secrets
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# SQLite temporary files
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm

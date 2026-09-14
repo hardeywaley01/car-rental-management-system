@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}
+Login
+{% endblock %}
+
+{% block content %}
+
+<div class="card" style="max-width: 450px; margin: 50px auto;">
+
+    <h1 class="page-title">Login</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        {% if next %}
+            <input type="hidden" name="next" value="{{ next }}">
+        {% endif %}
+
+        <button type="submit" class="btn">
+            Login
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

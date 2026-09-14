@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Inspect Car</title>
+
+</head>
+
+<body>
+
+    <h1>Inspect Returned Car</h1>
+
+    <h2>
+        {{ rental.car.brand }}
+        {{ rental.car.model }}
+    </h2>
+
+    <p>
+        Plate Number:
+        {{ rental.car.plate_number }}
+    </p>
+
+    <p>
+        Customer:
+        {{ rental.customer.full_name }}
+    </p>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <p>
+            What is the condition of the car?
+        </p>
+
+        <button
+            type="submit"
+            name="inspection_result"
+            value="available"
+        >
+            Pass Inspection
+        </button>
+
+        <button
+            type="submit"
+            name="inspection_result"
+            value="maintenance"
+        >
+            Send to Maintenance
+        </button>
+
+    </form>
+
+    <br>
+
+    <a href="{% url 'rental_list' %}">
+        Back to Rentals
+    </a>
+
+</body>
+
+</html>

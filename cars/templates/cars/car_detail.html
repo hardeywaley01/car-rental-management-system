@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+{{ car.brand }} {{ car.model }}
+{% endblock %}
+
+
+{% block content %}
+
+<h1 class="page-title">
+    Car Details
+</h1>
+
+
+<div class="card">
+
+    {% if car.image %}
+
+        <img
+            src="{{ car.image.url }}"
+            alt="{{ car.brand }} {{ car.model }}"
+            style="
+                width: 100%;
+                max-width: 500px;
+                border-radius: 10px;
+            "
+        >
+
+        <br>
+        <br>
+
+    {% endif %}
+
+
+    <h2>
+        {{ car.brand }}
+        {{ car.model }}
+    </h2>
+
+
+    <p>
+        <strong>Year:</strong>
+        {{ car.year }}
+    </p>
+
+
+    <p>
+        <strong>Plate Number:</strong>
+        {{ car.plate_number }}
+    </p>
+
+
+    <p>
+        <strong>Daily Price:</strong>
+        ₦{{ car.daily_price }}
+    </p>
+
+
+    <p>
+        <strong>Status:</strong>
+        {{ car.get_status_display }}
+    </p>
+
+
+    <p>
+        <strong>Description:</strong>
+        {{ car.description|default:"No description provided." }}
+    </p>
+
+
+    <a
+        href="{% url 'car_edit' car.pk %}"
+        class="btn"
+    >
+        Edit Car
+    </a>
+
+
+    <a
+        href="{% url 'car_list' %}"
+    >
+        ← Back to Cars
+    </a>
+
+</div>
+
+{% endblock %}

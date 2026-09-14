@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Create Rental
+{% endblock %}
+
+
+{% block content %}
+
+<h1 class="page-title">
+    Create Rental
+</h1>
+
+<select name="car" id="id_car" required>
+    <option value="">---------</option>
+
+    {% for car in form.car.field.queryset %}
+        <option
+            value="{{ car.pk }}"
+            data-price="{{ car.daily_price }}"
+            {% if form.car.value|stringformat:"s" == car.pk|stringformat:"s" %}
+                selected
+            {% endif %}
+        >
+            {{ car.brand }} {{ car.model }} ({{ car.plate_number }})
+        </option>
+    {% endfor %}
+</select>
+<div class="card">
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button
+            type="submit"
+            class="btn"
+        >
+            Create Rental
+        </button>
+
+    </form>
+
+</div>
+<script>
+    const carSelect = document.getElementById("id_car");
+    const priceInput = document.getElementById("id_daily_price");
+
+    function updateDailyPrice() {
+        const selectedOption =
+            carSelect.options[carSelect.selectedIndex];
+
+        const price = selectedOption.dataset.price;
+
+        if (price) {
+            priceInput.value = price;
+        } else {
+            priceInput.value = "";
+        }
+    }
+
+    carSelect.addEventListener("change", updateDailyPrice);
+
+    updateDailyPrice();
+</script>
+
+{% endblock %}

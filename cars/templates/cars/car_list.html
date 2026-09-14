@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Cars</h1>
+<div class="card">
+
+    <form method="GET">
+
+        <input
+            type="text"
+            name="search"
+            placeholder="Search brand, model or plate..."
+            value="{{ search }}"
+        >
+
+        <select name="status">
+
+            <option value="">
+                All Status
+            </option>
+
+            <option value="available"
+                {% if status == "available" %}selected{% endif %}>
+                Available
+            </option>
+
+            <option value="rented"
+                {% if status == "rented" %}selected{% endif %}>
+                Rented
+            </option>
+
+            <option value="returned"
+                {% if status == "returned" %}selected{% endif %}>
+                Returned
+            </option>
+
+            <option value="maintenance"
+                {% if status == "maintenance" %}selected{% endif %}>
+                Maintenance
+            </option>
+
+        </select>
+
+        <button type="submit" class="btn">
+            Search
+        </button>
+
+        <a href="{% url 'car_list' %}" class="btn">
+            Clear
+        </a>
+
+    </form>
+
+</div>
+<a href="{% url 'car_create' %}">
+    Add New Car
+</a>
+<form method="GET">
+
+    <input
+        type="text"
+        name="search"
+        placeholder="Search car..."
+        value="{{ search }}"
+    >
+
+    <button type="submit" class="btn">
+        Search
+    </button>
+
+</form>
+
+<br>
+<hr>
+
+<table border="1" cellpadding="10">
+
+    <thead>
+        <tr>
+            <th>Car</th>
+            <th>Plate Number</th>
+            <th>Year</th>
+            <th>Transmission</th>
+            <th>Fuel</th>
+            <th>Daily Price</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for car in cars %}
+
+        <tr>
+
+            <td>
+                {{ car.brand }} {{ car.model }}
+            </td>
+
+            <td>
+                {{ car.plate_number }}
+            </td>
+
+            <td>
+                {{ car.year }}
+            </td>
+
+            <td>
+                {{ car.get_transmission_display }}
+            </td>
+
+            <td>
+                {{ car.get_fuel_type_display }}
+            </td>
+
+            <td>
+                ₦{{ car.daily_price }}
+            </td>
+
+            <td>
+
+                {% if car.status == "available" %}
+
+                    🟢 Available
+
+                {% elif car.status == "rented" %}
+
+                    🔴 Rented
+
+                {% elif car.status == "returned" %}
+
+                    🟡 Returned
+
+                {% elif car.status == "maintenance" %}
+
+                    🔧 Available but Not for Rent
+
+                {% endif %}
+
+            </td>
+
+        </tr>
+
+        {% empty %}
+
+        <tr>
+            <td colspan="7">
+                No cars have been added yet.
+            </td>
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}

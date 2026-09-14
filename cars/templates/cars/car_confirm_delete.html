@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>Delete Car</title>
+</head>
+
+<body>
+
+    <h1>Delete Car</h1>
+
+    <p>
+        Are you sure you want to delete
+        <strong>
+            {{ car.brand }} {{ car.model }}
+        </strong>?
+    </p>
+
+    <p>
+        Plate Number:
+        {{ car.plate_number }}
+    </p>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <button type="submit">
+            Yes, Delete
+        </button>
+
+        <a href="{% url 'car_list' %}">
+            Cancel
+        </a>
+
+    </form>
+
+</body>
+
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Return Car</title>
+
+</head>
+
+<body>
+
+    <h1>Return Car</h1>
+
+    <p>
+        Customer:
+        {{ rental.customer.full_name }}
+    </p>
+
+    <p>
+        Car:
+        {{ rental.car.brand }}
+        {{ rental.car.model }}
+    </p>
+
+    <p>
+        Plate:
+        {{ rental.car.plate_number }}
+    </p>
+
+    <p>
+        Are you sure this car has been returned?
+    </p>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <button type="submit">
+            Confirm Return
+        </button>
+
+        <a href="{% url 'rental_list' %}">
+            Cancel
+        </a>
+
+    </form>
+
+</body>
+
+</html>

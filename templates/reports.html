@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}
+Reports
+{% endblock %}
+
+{% block content %}
+
+<h1 class="page-title">
+    System Reports
+</h1>
+
+<div class="card">
+
+    <h2>Fleet Summary</h2>
+
+    <p>Total Cars: <strong>{{ total_cars }}</strong></p>
+
+    <p>
+        Available:
+        <strong>{{ available_cars }}</strong>
+    </p>
+
+    <p>
+        Currently Rented:
+        <strong>{{ rented_cars }}</strong>
+    </p>
+
+    <p>
+        Returned:
+        <strong>{{ returned_cars }}</strong>
+    </p>
+
+    <p>
+        Maintenance:
+        <strong>{{ maintenance_cars }}</strong>
+    </p>
+
+</div>
+
+
+<div class="card">
+
+    <h2>Customer & Rental Summary</h2>
+
+    <p>
+        Total Customers:
+        <strong>{{ total_customers }}</strong>
+    </p>
+
+    <p>
+        Active Rentals:
+        <strong>{{ active_rentals }}</strong>
+    </p>
+
+    <p>
+        Returned Rentals:
+        <strong>{{ returned_rentals }}</strong>
+    </p>
+
+</div>
+
+
+<div class="card">
+
+    <h2>Financial Summary</h2>
+
+    <p>
+        Paid Revenue:
+        <strong>₦{{ total_revenue|floatformat:2 }}</strong>
+    </p>
+
+    <p>
+        Outstanding:
+        <strong>₦{{ outstanding|floatformat:2 }}</strong>
+    </p>
+
+</div>
+
+{% endblock %}

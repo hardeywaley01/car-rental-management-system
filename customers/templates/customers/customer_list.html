@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}
+Customers
+{% endblock %}
+
+{% block content %}
+
+<h1 class="page-title">
+    Customers
+</h1>
+<form method="GET">
+
+    <input
+        type="text"
+        name="search"
+        placeholder="Search customer..."
+        value="{{ search }}"
+    >
+
+    <button type="submit" class="btn">
+        Search
+    </button>
+
+</form>
+
+<br>
+<a
+    href="{% url 'customer_create' %}"
+    class="btn"
+>
+    + Add Customer
+</a>
+
+<br>
+<br>
+
+<form method="GET">
+
+    <input
+        type="text"
+        name="search"
+        value="{{ search }}"
+        placeholder="Search name, phone or license..."
+    >
+
+    <button
+        type="submit"
+        class="btn"
+    >
+        Search
+    </button>
+
+</form>
+
+<br>
+
+{% for customer in customers %}
+
+<div class="card">
+
+    <h2>
+        {{ customer.full_name }}
+    </h2>
+
+    <p>
+        <strong>Phone:</strong>
+        {{ customer.phone }}
+    </p>
+
+    <p>
+        <strong>Email:</strong>
+        {{ customer.email|default:"Not provided" }}
+    </p>
+
+    <p>
+        <strong>Driver's License:</strong>
+        {{ customer.driver_license }}
+    </p>
+
+    <a
+        href="{% url 'customer_detail' customer.pk %}"
+        class="btn"
+    >
+        View Customer
+    </a>
+
+</div>
+
+<br>
+
+{% empty %}
+
+<p>
+    No customers found.
+</p>
+
+{% endfor %}
+
+{% endblock %}

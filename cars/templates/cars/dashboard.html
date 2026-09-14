@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+
+{% block content %}
+
+<h1 class="page-title">
+    Car Rental Dashboard
+</h1>
+
+
+<div class="cards">
+
+    <div class="card">
+
+        <h2>Available Cars</h2>
+
+        <div class="number">
+            {{ available_count }}
+        </div>
+
+        <a
+            class="btn"
+            href="{% url 'car_status' 'available' %}"
+        >
+            View Cars
+        </a>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>Rented Cars</h2>
+
+        <div class="number">
+            {{ rented_count }}
+        </div>
+
+        <a
+            class="btn"
+            href="{% url 'car_status' 'rented' %}"
+        >
+            View Cars
+        </a>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>Returned Cars</h2>
+
+        <div class="number">
+            {{ returned_count }}
+        </div>
+
+        <a
+            class="btn"
+            href="{% url 'car_status' 'returned' %}"
+        >
+            View Cars
+        </a>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>Not For Rental</h2>
+
+        <div class="number">
+            {{ maintenance_count }}
+        </div>
+
+        <a
+            class="btn"
+            href="{% url 'car_status' 'maintenance' %}"
+        >
+            View Cars
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}
