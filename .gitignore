@@ -12,6 +12,8 @@ env/
 # Django
 *.log
 
+staticfiles/
+
 # Environment variables / secrets
 .env
 .env.*
