@@ -10,7 +10,7 @@ class Command(BaseCommand):
 
         username = "admin"
         email = "admin@mtech.com"
-        password = "CHANGE_THIS_PASSWORD"
+        password = "7173"
 
         if User.objects.filter(username=username).exists():
             self.stdout.write(self.style.WARNING("Admin already exists."))
