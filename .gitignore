@@ -30,3 +30,7 @@ Thumbs.db
 *.sqlite3-journal
 *.sqlite3-wal
 *.sqlite3-shm
+
+# Local database export
+data.json
+db_backup_before_deployment.sqlite3
