@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 
 
 class Command(BaseCommand):
-    help = "Create a production superuser"
+    help = "Create or update the production admin"
 
     def handle(self, *args, **options):
         User = get_user_model()
@@ -12,16 +12,18 @@ class Command(BaseCommand):
         email = "admin@mtech.com"
         password = "7173"
 
-        if User.objects.filter(username=username).exists():
-            self.stdout.write(self.style.WARNING("Admin already exists."))
-            return
-
-        User.objects.create_superuser(
+        user, created = User.objects.get_or_create(
             username=username,
-            email=email,
-            password=password,
+            defaults={"email": email},
         )
 
-        self.stdout.write(
-            self.style.SUCCESS("Admin user created successfully.")
-        )
+        user.email = email
+        user.set_password(password)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save()
+
+        if created:
+            self.stdout.write(self.style.SUCCESS("Admin user created successfully."))
+        else:
+            self.stdout.write(self.style.SUCCESS("Admin password updated successfully."))
