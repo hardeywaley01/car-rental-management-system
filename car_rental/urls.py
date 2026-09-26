@@ -1,19 +1,29 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
 from django.contrib.auth import views as auth_views
+from django.urls import include, path
 
-from cars import views
+from accounts import views as account_views
+from cars import views as car_views
+from . import views
 
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path(
+        "admin/",
+        admin.site.urls
+    ),
+
+    path(
+        "accounts/",
+        include("accounts.urls")
+    ),
 
     path(
         "",
-        views.dashboard,
-        name="dashboard"
+        views.home,
+        name="home"
     ),
 
     path(
@@ -27,32 +37,32 @@ urlpatterns = [
     ),
 
     path(
-    "customers/",
-    include("customers.urls")
+        "customers/",
+        include("customers.urls")
     ),
 
     path(
-    "login/",
-    auth_views.LoginView.as_view(
-        template_name="registration/login.html"
-    ),
-    name="login"
+        "login/",
+        account_views.user_login,
+        name="login"
     ),
 
     path(
-    "logout/",
-    auth_views.LogoutView.as_view(),
-    name="logout"
+        "logout/",
+        auth_views.LogoutView.as_view(),
+        name="logout"
     ),
+
     path(
-    "reports/",
-    views.reports,
-    name="reports"
-),
-    
+        "reports/",
+        car_views.reports,
+        name="reports"
+    ),
 ]
 
-urlpatterns += static(
-    settings.MEDIA_URL,
-    document_root=settings.MEDIA_ROOT
-)
+
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT
+    )

@@ -8,22 +8,123 @@ Login
 
 <div class="card" style="max-width: 450px; margin: 50px auto;">
 
-    <h1 class="page-title">Login</h1>
+    <h1 class="page-title">
+        Login
+    </h1>
+
+    <p style="color: #6b7280; margin-bottom: 25px;">
+        Enter your username and password to continue.
+    </p>
+
+    {% if error %}
+        <div style="
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        ">
+            {{ error }}
+        </div>
+    {% endif %}
 
     <form method="POST">
+
         {% csrf_token %}
 
-        {{ form.as_p }}
+        <div style="margin-bottom: 20px;">
 
-        {% if next %}
-            <input type="hidden" name="next" value="{{ next }}">
+            <label
+                for="username"
+                style="
+                    display: block;
+                    margin-bottom: 8px;
+                    font-weight: bold;
+                "
+            >
+                Username
+            </label>
+
+            <input
+                type="text"
+                id="username"
+                name="username"
+                required
+                autocomplete="username"
+                style="
+                    width: 100%;
+                    padding: 12px;
+                    border: 1px solid #d1d5db;
+                    border-radius: 6px;
+                    font-size: 16px;
+                "
+            >
+
+        </div>
+
+
+        <div style="margin-bottom: 25px;">
+
+            <label
+                for="password"
+                style="
+                    display: block;
+                    margin-bottom: 8px;
+                    font-weight: bold;
+                "
+            >
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                autocomplete="current-password"
+                style="
+                    width: 100%;
+                    padding: 12px;
+                    border: 1px solid #d1d5db;
+                    border-radius: 6px;
+                    font-size: 16px;
+                "
+            >
+
+        </div>
+
+
+        {% if request.GET.next %}
+            <input
+                type="hidden"
+                name="next"
+                value="{{ request.GET.next }}"
+            >
         {% endif %}
 
-        <button type="submit" class="btn">
+
+        <button
+            type="submit"
+            class="btn"
+            style="width: 100%;"
+        >
             Login
         </button>
 
     </form>
+
+
+    <p style="
+        margin-top: 25px;
+        text-align: center;
+        color: #6b7280;
+    ">
+        Don't have a customer account?
+
+        <a href="{% url 'register' %}">
+            Create Account
+        </a>
+    </p>
 
 </div>
 

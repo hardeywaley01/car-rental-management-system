@@ -1,4 +1,5 @@
 from django import forms
+from django.utils import timezone
 
 from cars.models import Car
 from .models import Rental
@@ -33,7 +34,6 @@ class RentalForm(forms.ModelForm):
                 }
             ),
         }
-        
 
     def __init__(self, *args, **kwargs):
 
@@ -44,13 +44,18 @@ class RentalForm(forms.ModelForm):
         )
 
         self.fields["daily_price"].required = False
-        self.fields["daily_price"].widget.attrs["readonly"] = True
+
+        self.fields[
+            "daily_price"
+        ].widget.attrs["readonly"] = True
 
     def clean(self):
 
         cleaned_data = super().clean()
 
-        car = cleaned_data.get("car")
+        car = cleaned_data.get(
+            "car"
+        )
 
         rental_date = cleaned_data.get(
             "rental_date"
@@ -60,6 +65,17 @@ class RentalForm(forms.ModelForm):
             "expected_return_date"
         )
 
+        # Prevent rental dates in the past
+        if (
+            rental_date
+            and rental_date < timezone.localdate()
+        ):
+            self.add_error(
+                "rental_date",
+                "Rental date cannot be in the past."
+            )
+
+        # Make sure the selected car is available
         if car:
 
             if car.status != "available":
@@ -69,28 +85,37 @@ class RentalForm(forms.ModelForm):
                 )
 
             # Automatically use the car's daily price
-            cleaned_data["daily_price"] = car.daily_price
+            cleaned_data[
+                "daily_price"
+            ] = car.daily_price
 
-        if rental_date and expected_return_date:
+        # Return date must be after rental date
+        if (
+            rental_date
+            and expected_return_date
+            and expected_return_date <= rental_date
+        ):
 
-            if expected_return_date <= rental_date:
-
-                raise forms.ValidationError(
-                    "Expected return date must be after rental date."
-                )
+            self.add_error(
+                "expected_return_date",
+                "Expected return date must be after rental date."
+            )
 
         return cleaned_data
 
-def clean_amount_paid(self):
+    def clean_amount_paid(self):
 
-    amount_paid = self.cleaned_data.get("amount_paid")
-
-    if amount_paid is None:
-        amount_paid = 0
-
-    if amount_paid < 0:
-        raise forms.ValidationError(
-            "Amount paid cannot be negative."
+        amount_paid = self.cleaned_data.get(
+            "amount_paid"
         )
 
-    return amount_paid
+        if amount_paid is None:
+            amount_paid = 0
+
+        if amount_paid < 0:
+
+            raise forms.ValidationError(
+                "Amount paid cannot be negative."
+            )
+
+        return amount_paid

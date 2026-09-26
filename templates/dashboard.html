@@ -96,6 +96,26 @@ Dashboard
 
     </a>
 
+
+    <a
+        href="{% url 'rental_request_list' %}"
+        class="dashboard-card"
+    >
+
+        <h2>
+            Rental Requests
+        </h2>
+
+        <div class="dashboard-number">
+            {{ pending_requests }}
+        </div>
+
+        <p>
+             Pending customer requests
+        </p>
+
+    </a>
+
 </div>
 
 

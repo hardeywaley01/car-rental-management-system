@@ -6,9 +6,10 @@ from django.db import models
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models.deletion import ProtectedError
+from django.contrib.admin.views.decorators import staff_member_required
 
 
-@login_required
+@staff_member_required
 def customer_list(request):
 
     search = request.GET.get("search", "").strip()
@@ -31,7 +32,7 @@ def customer_list(request):
         }
     )
 
-@login_required
+@staff_member_required
 def customer_create(request):
 
     if request.method == "POST":
@@ -58,7 +59,7 @@ def customer_create(request):
         context
     )
 
-@login_required
+@staff_member_required
 def customer_detail(request, pk):
 
     customer = get_object_or_404(
@@ -81,7 +82,7 @@ def customer_detail(request, pk):
         context
     )
 
-@login_required
+@staff_member_required
 def customer_edit(request, pk):
 
     customer = get_object_or_404(
@@ -122,7 +123,7 @@ def customer_edit(request, pk):
         context
     )
 
-@login_required
+@staff_member_required
 def customer_delete(request, pk):
     customer = get_object_or_404(Customer, pk=pk)
 

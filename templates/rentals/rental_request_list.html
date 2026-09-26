@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}
+Rental Requests
+{% endblock %}
+
+{% block content %}
+
+<style>
+    .requests-header {
+        margin-bottom: 30px;
+    }
+
+    .requests-header h1 {
+        margin: 0 0 8px;
+        font-size: clamp(28px, 5vw, 42px);
+        line-height: 1.15;
+    }
+
+    .requests-header p {
+        margin: 0;
+        color: #6b7280;
+    }
+
+    .request-list {
+        display: grid;
+        gap: 20px;
+    }
+
+    .request-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    }
+
+    .request-card h2 {
+        margin: 0 0 20px;
+        color: #2563eb;
+        font-size: 22px;
+    }
+
+    .request-details {
+        display: grid;
+        grid-template-columns:
+            repeat(auto-fit, minmax(220px, 1fr));
+        gap: 15px 30px;
+    }
+
+    .request-details p {
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    .request-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .request-actions form {
+        margin: 0;
+    }
+
+    .approve-btn,
+    .reject-btn {
+        border: none;
+        border-radius: 7px;
+        padding: 11px 18px;
+        color: white;
+        font-weight: bold;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .approve-btn {
+        background: #16a34a;
+    }
+
+    .reject-btn {
+        background: #dc2626;
+    }
+
+    .approve-btn:hover,
+    .reject-btn:hover {
+        opacity: 0.9;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 5px 11px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: bold;
+    }
+
+    .status-pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-approved {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .status-rejected {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .empty-state {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        text-align: center;
+        color: #6b7280;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-top: 30px;
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+        .request-card {
+            padding: 18px;
+        }
+
+        .request-actions {
+            flex-direction: column;
+        }
+
+        .request-actions form,
+        .approve-btn,
+        .reject-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<div class="requests-header">
+
+    <h1>
+        Customer Rental Requests
+    </h1>
+
+    <p>
+        Review and manage rental requests submitted by customers.
+    </p>
+
+</div>
+
+
+{% if rental_requests %}
+
+    <div class="request-list">
+
+        {% for rental_request in rental_requests %}
+
+            <div class="request-card">
+
+                <h2>
+                    {{ rental_request.car.brand }}
+                    {{ rental_request.car.model }}
+                </h2>
+
+
+                <div class="request-details">
+
+                    <p>
+                        <strong>Customer:</strong><br>
+                        {{ rental_request.customer.full_name }}
+                    </p>
+
+                    <p>
+                        <strong>Phone:</strong><br>
+                        {{ rental_request.customer.phone }}
+                    </p>
+
+                    <p>
+                        <strong>Rental Date:</strong><br>
+                        {{ rental_request.rental_date }}
+                    </p>
+
+                    <p>
+                        <strong>Expected Return:</strong><br>
+                        {{ rental_request.expected_return_date }}
+                    </p>
+
+                    <p>
+                        <strong>Status:</strong><br>
+
+                        <span class="
+                            status-badge
+                            status-{{ rental_request.status }}
+                        ">
+                            {{ rental_request.get_status_display }}
+                        </span>
+                    </p>
+
+                    <p>
+                        <strong>Submitted:</strong><br>
+                        {{ rental_request.created_at }}
+                    </p>
+
+                </div>
+
+
+                {% if rental_request.status == "pending" %}
+
+                    <div class="request-actions">
+
+                        <form
+                            method="POST"
+                            action="{% url 'approve_rental_request' rental_request.id %}"
+                        >
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="approve-btn"
+                            >
+                                Approve Request
+                            </button>
+
+                        </form>
+
+
+                        <form
+                            method="POST"
+                            action="{% url 'reject_rental_request' rental_request.id %}"
+                        >
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="reject-btn"
+                            >
+                                Reject Request
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+{% else %}
+
+    <div class="empty-state">
+
+        <h3>No Rental Requests</h3>
+
+        <p>
+            No customer rental requests have been submitted yet.
+        </p>
+
+    </div>
+
+{% endif %}
+
+
+<a
+    href="{% url 'dashboard' %}"
+    class="back-link"
+>
+    ← Back to Staff Dashboard
+</a>
+
+{% endblock %}

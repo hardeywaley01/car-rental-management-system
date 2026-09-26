@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Car Rental Management System</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b1220;
+            color: white;
+        }
+
+        nav {
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 7%;
+            background: #111827;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #38bdf8;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 25px;
+        }
+
+        .login-btn {
+            background: #2563eb;
+            padding: 10px 18px;
+            border-radius: 6px;
+        }
+
+        .hero {
+            min-height: calc(100vh - 70px);
+            display: flex;
+            align-items: center;
+            padding: 60px 7%;
+            background:
+                linear-gradient(rgba(11,18,32,0.82), rgba(11,18,32,0.95)),
+                url("https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1600&q=80")
+                center/cover;
+        }
+
+        .hero-content {
+            max-width: 650px;
+        }
+
+        .hero h1 {
+            font-size: 58px;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 span {
+            color: #38bdf8;
+        }
+
+        .hero p {
+            font-size: 19px;
+            line-height: 1.7;
+            color: #d1d5db;
+            margin-bottom: 30px;
+        }
+
+        .buttons a {
+            display: inline-block;
+            text-decoration: none;
+            padding: 14px 24px;
+            border-radius: 7px;
+            margin-right: 12px;
+            font-weight: bold;
+        }
+
+        .primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .secondary {
+            border: 1px solid #64748b;
+            color: white;
+        }
+
+        .features {
+            padding: 70px 7%;
+            background: #0f172a;
+            text-align: center;
+        }
+
+        .features h2 {
+            font-size: 34px;
+            margin-bottom: 40px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .feature {
+            background: #111827;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #1e293b;
+        }
+
+        .feature h3 {
+            color: #38bdf8;
+            margin-bottom: 12px;
+        }
+
+        .feature p {
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            background: #080d17;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 800px) {
+            .hero h1 {
+                font-size: 40px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                padding: 0 5%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo">CAR RENTAL</div>
+
+        <div>
+            <a href="/">Home</a>
+            <a href="/login/" class="login-btn">Staff Login</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+
+            <h1>
+                Find Your Perfect
+                <span>Ride.</span>
+            </h1>
+
+            <p>
+                A simple and reliable car rental platform where
+                customers can browse available vehicles, submit
+                rental requests, and manage their rentals.
+            </p>
+
+            <div class="buttons">
+        <a href="{% url 'register' %}" class="primary">
+            Create Customer Account
+        </a>
+
+        <a href="/cars/" class="secondary">
+            Browse Cars
+        </a>
+    </div>
+
+        </div>
+    </section>
+
+    <section class="features">
+
+        <h2>Why Use Our Platform?</h2>
+
+        <div class="feature-grid">
+
+            <div class="feature">
+                <h3>🚗 Quality Cars</h3>
+                <p>
+                    Browse vehicles and check their availability
+                    before making a rental request.
+                </p>
+            </div>
+
+            <div class="feature">
+                <h3>📋 Easy Requests</h3>
+                <p>
+                    Customers can submit rental requests without
+                    complicated procedures.
+                </p>
+            </div>
+
+            <div class="feature">
+                <h3>🔒 Secure Management</h3>
+                <p>
+                    Staff can manage customers, cars, rentals,
+                    payments and returns from one system.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <footer>
+        © 2026 Car Rental Management System. All rights reserved.
+    </footer>
+
+</body>
+</html>
