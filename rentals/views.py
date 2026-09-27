@@ -602,28 +602,39 @@ def approve_rental_request(request, pk):
 @staff_member_required
 @require_POST
 def reject_rental_request(request, pk):
-    rental_request = get_object_or_404(
-        RentalRequest,
-        pk=pk
-    )
 
-    if rental_request.status != "pending":
-        messages.error(
-            request,
-            "This rental request has already been processed."
+    with transaction.atomic():
+
+        rental_request = get_object_or_404(
+            RentalRequest.objects.select_for_update(),
+            pk=pk
         )
-        return redirect("rental_request_list")
 
-    rental_request.status = "rejected"
-    rental_request.save(update_fields=["status"])
+        if rental_request.status != "pending":
+
+            messages.error(
+                request,
+                "This rental request has already been processed."
+            )
+
+            return redirect(
+                "rental_request_list"
+            )
+
+        rental_request.status = "rejected"
+
+        rental_request.save(
+            update_fields=["status"]
+        )
 
     messages.success(
         request,
         "Rental request rejected successfully."
     )
 
-    return redirect("rental_request_list")
-
+    return redirect(
+        "rental_request_list"
+    )
 @staff_member_required
 @require_POST
 def update_rental_payment(request, pk):
