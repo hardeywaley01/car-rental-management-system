@@ -268,57 +268,86 @@ def inspect_car(request, pk):
 @require_POST
 def inspect_returned_car(request, pk):
 
-    rental = get_object_or_404(
-        Rental,
-        pk=pk
+    decision = request.POST.get(
+        "decision"
     )
 
-    if rental.status != "returned":
-
-        messages.error(
-            request,
-            "Only returned cars can be inspected."
-        )
-
-        return redirect(
-            "rental_detail",
-            pk=rental.pk
-        )
-
-    decision = request.POST.get("decision")
-
-    if decision == "available":
-
-        rental.car.status = "available"
-
-        rental.car.save(
-            update_fields=["status"]
-        )
-
-        messages.success(
-            request,
-            "Car inspected and marked available for rental."
-        )
-
-    elif decision == "maintenance":
-
-        rental.car.status = "maintenance"
-
-        rental.car.save(
-            update_fields=["status"]
-        )
-
-        messages.warning(
-            request,
-            "Car has been sent to maintenance."
-        )
-
-    else:
+    if decision not in [
+        "available",
+        "maintenance",
+    ]:
 
         messages.error(
             request,
             "Invalid inspection decision."
         )
+
+        return redirect(
+            "rental_detail",
+            pk=pk
+        )
+
+    with transaction.atomic():
+
+        rental = get_object_or_404(
+            Rental.objects.select_for_update(),
+            pk=pk
+        )
+
+        if rental.status != "returned":
+
+            messages.error(
+                request,
+                "Only returned cars can be inspected."
+            )
+
+            return redirect(
+                "rental_detail",
+                pk=rental.pk
+            )
+
+        car = get_object_or_404(
+            Car.objects.select_for_update(),
+            pk=rental.car_id
+        )
+
+        if car.status != "returned":
+
+            messages.error(
+                request,
+                "This car has already been inspected."
+            )
+
+            return redirect(
+                "rental_detail",
+                pk=rental.pk
+            )
+
+        if decision == "available":
+
+            car.status = "available"
+
+            car.save(
+                update_fields=["status"]
+            )
+
+            messages.success(
+                request,
+                "Car inspected and marked available for rental."
+            )
+
+        else:
+
+            car.status = "maintenance"
+
+            car.save(
+                update_fields=["status"]
+            )
+
+            messages.warning(
+                request,
+                "Car has been sent to maintenance."
+            )
 
     return redirect(
         "rental_detail",
