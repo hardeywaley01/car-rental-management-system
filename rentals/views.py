@@ -31,7 +31,6 @@ def rental_create(request):
 
             rental = form.save(commit=False)
 
-            car = rental.car
             start_date = rental.rental_date
             return_date = rental.expected_return_date
 
@@ -46,60 +45,67 @@ def rental_create(request):
                     "Return date must be after rental date."
                 )
 
-            elif car.status != "available":
-
-                form.add_error(
-                    "car",
-                    "This car is no longer available."
-                )
-
             else:
 
-                rental.daily_price = car.daily_price
+                with transaction.atomic():
 
-                rental.total_cost = (
-                    car.daily_price
-                    * Decimal(number_of_days)
-                )
-
-                rental.amount_paid = (
-                    rental.amount_paid
-                    or Decimal("0.00")
-                )
-
-                # Prevent payment above the rental cost
-                if rental.amount_paid > rental.total_cost:
-
-                    form.add_error(
-                        "amount_paid",
-                        "Amount paid cannot be greater than "
-                        "the total rental cost."
+                    car = get_object_or_404(
+                        Car.objects.select_for_update(),
+                        pk=rental.car_id
                     )
 
-                else:
+                    if car.status != "available":
 
-                    if rental.amount_paid == rental.total_cost:
-                        rental.payment_status = "paid"
-
-                    elif rental.amount_paid > 0:
-                        rental.payment_status = "partial"
-
-                    else:
-                        rental.payment_status = "pending"
-
-                    with transaction.atomic():
-
-                        rental.save()
-
-                        car.status = "rented"
-
-                        car.save(
-                            update_fields=["status"]
+                        form.add_error(
+                            "car",
+                            "This car is no longer available."
                         )
 
-                    return redirect(
-                        "rental_list"
-                    )
+                    else:
+
+                        rental.car = car
+                        rental.daily_price = car.daily_price
+
+                        rental.total_cost = (
+                            car.daily_price
+                            * Decimal(number_of_days)
+                        )
+
+                        rental.amount_paid = (
+                            rental.amount_paid
+                            or Decimal("0.00")
+                        )
+
+                        if rental.amount_paid > rental.total_cost:
+
+                            form.add_error(
+                                "amount_paid",
+                                "Amount paid cannot be greater than "
+                                "the total rental cost."
+                            )
+
+                        else:
+
+                            if rental.amount_paid == rental.total_cost:
+                                rental.payment_status = "paid"
+
+                            elif rental.amount_paid > 0:
+                                rental.payment_status = "partial"
+
+                            else:
+                                rental.payment_status = "pending"
+
+                            rental.save()
+
+                            car.status = "rented"
+
+                            car.save(
+                                update_fields=["status"]
+                            )
+
+                            return redirect(
+                                "rental_list"
+                            )
 
     else:
 
