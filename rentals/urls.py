@@ -29,7 +29,7 @@ urlpatterns = [
         views.rental_detail,
         name="rental_detail"
     ),
-    
+
     path(
     "request/<int:car_id>/",
     views.rental_request_create,
@@ -48,11 +48,7 @@ urlpatterns = [
         name="inspect_returned_car"
     ),
 
-    path(
-        "<int:pk>/inspect-car/",
-        views.inspect_car,
-        name="inspect_car"
-    ),
+    
         path(
         "<int:pk>/receipt/",
         views.rental_receipt,

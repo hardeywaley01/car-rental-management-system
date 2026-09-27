@@ -140,9 +140,9 @@ Rentals
         </a>
     {% if rental.status == "returned" %}
 
-        <a
+       <a
             class="btn"
-            href="{% url 'inspect_car' rental.pk %}"
+            href="{% url 'rental_detail' rental.pk %}"
         >
             Inspect Car
         </a>

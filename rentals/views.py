@@ -208,67 +208,7 @@ def rental_return(request, pk):
         "rental_detail",
         pk=rental.pk
     )
-@staff_member_required
-@login_required
-def inspect_car(request, pk):
 
-    rental = get_object_or_404(
-        Rental,
-        pk=pk
-    )
-
-    if rental.status != "returned":
-        messages.error(
-            request,
-            "Only returned cars can be inspected."
-        )
-        return redirect("rental_list")
-
-    if request.method == "POST":
-
-        inspection_result = request.POST.get(
-            "inspection_result"
-        )
-
-        with transaction.atomic():
-
-            if inspection_result == "available":
-
-                rental.car.status = "available"
-
-                rental.car.save(
-                    update_fields=["status"]
-                )
-
-                messages.success(
-                    request,
-                    "Car passed inspection and is now available for rental."
-                )
-
-            elif inspection_result == "maintenance":
-
-                rental.car.status = "maintenance"
-
-                rental.car.save(
-                    update_fields=["status"]
-                )
-
-                messages.warning(
-                    request,
-                    "Car has been sent for maintenance."
-                )
-
-        return redirect("car_list")
-
-    context = {
-        "rental": rental,
-    }
-
-    return render(
-        request,
-        "rentals/inspect_car.html",
-        context
-    )
 @staff_member_required
 @login_required
 @require_POST
