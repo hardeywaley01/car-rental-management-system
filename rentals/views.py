@@ -388,18 +388,7 @@ def rental_request_create(request, car_id):
         status="available"
     )
 
-    existing_request = RentalRequest.objects.filter(
-        customer=customer,
-        car=car,
-        status="pending"
-    ).exists()
-
-    if existing_request:
-        messages.warning(
-            request,
-            "You already have a pending request for this car."
-        )
-        return redirect("customer_dashboard")
+    
 
     if request.method == "POST":
         form = RentalRequestForm(
