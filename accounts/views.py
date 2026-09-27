@@ -1,4 +1,5 @@
-from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.shortcuts import redirect, render
@@ -21,7 +22,24 @@ def register(request):
         if request.user.is_staff:
             return redirect("dashboard")
 
-        return redirect("customer_dashboard")
+        customer = Customer.objects.filter(
+            user=request.user
+        ).first()
+
+        if customer is not None:
+            return redirect(
+                "customer_dashboard"
+            )
+
+        # The user account exists but has no Customer profile.
+        # Log out so the user can create a complete customer account.
+        logout(request)
+
+        messages.info(
+            request,
+            "Your existing account does not have a customer profile. "
+            "Please complete a new customer registration."
+        )
 
     if request.method == "POST":
 
@@ -84,8 +102,16 @@ def customer_dashboard(request):
         user=request.user
     ).first()
 
-    # Normal users must have a customer profile
+    # Handle old user accounts that have no Customer profile
     if customer is None:
+
+        logout(request)
+
+        messages.info(
+            request,
+            "Your account does not have a customer profile. "
+            "Please complete customer registration."
+        )
 
         return redirect(
             "register"
@@ -148,9 +174,17 @@ def user_login(request):
                 "dashboard"
             )
 
-        return redirect(
-            "customer_dashboard"
-        )
+        customer = Customer.objects.filter(
+            user=request.user
+        ).first()
+
+        if customer is not None:
+
+            return redirect(
+                "customer_dashboard"
+            )
+
+        logout(request)
 
     if request.method == "POST":
 
@@ -170,16 +204,38 @@ def user_login(request):
 
         if user is not None:
 
-            login(
-                request,
-                user
-            )
-
             if user.is_staff:
+
+                login(
+                    request,
+                    user
+                )
 
                 return redirect(
                     "dashboard"
                 )
+
+            customer = Customer.objects.filter(
+                user=user
+            ).first()
+
+            if customer is None:
+
+                return render(
+                    request,
+                    "registration/login.html",
+                    {
+                        "error": (
+                            "This account does not have a customer profile. "
+                            "Please create a customer account using Register."
+                        )
+                    }
+                )
+
+            login(
+                request,
+                user
+            )
 
             return redirect(
                 "customer_dashboard"
