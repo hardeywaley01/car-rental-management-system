@@ -479,33 +479,56 @@ def rental_request_list(request):
 @staff_member_required
 @require_POST
 def approve_rental_request(request, pk):
-    rental_request = get_object_or_404(
-        RentalRequest,
-        pk=pk
-    )
-
-    if rental_request.status != "pending":
-        messages.error(
-            request,
-            "This rental request has already been processed."
-        )
-        return redirect("rental_request_list")
-
-    car = rental_request.car
-
-    if car.status != "available":
-        messages.error(
-            request,
-            "This car is no longer available."
-        )
-        return redirect("rental_request_list")
-
-    number_of_days = (
-        rental_request.expected_return_date
-        - rental_request.rental_date
-    ).days
 
     with transaction.atomic():
+
+        rental_request = get_object_or_404(
+            RentalRequest.objects.select_for_update(),
+            pk=pk
+        )
+
+        if rental_request.status != "pending":
+
+            messages.error(
+                request,
+                "This rental request has already been processed."
+            )
+
+            return redirect(
+                "rental_request_list"
+            )
+
+        car = get_object_or_404(
+            Car.objects.select_for_update(),
+            pk=rental_request.car_id
+        )
+
+        if car.status != "available":
+
+            messages.error(
+                request,
+                "This car is no longer available."
+            )
+
+            return redirect(
+                "rental_request_list"
+            )
+
+        number_of_days = (
+            rental_request.expected_return_date
+            - rental_request.rental_date
+        ).days
+
+        if number_of_days <= 0:
+
+            messages.error(
+                request,
+                "The rental request contains invalid rental dates."
+            )
+
+            return redirect(
+                "rental_request_list"
+            )
 
         Rental.objects.create(
             customer=rental_request.customer,
@@ -513,24 +536,35 @@ def approve_rental_request(request, pk):
             rental_date=rental_request.rental_date,
             expected_return_date=rental_request.expected_return_date,
             daily_price=car.daily_price,
-            total_cost=car.daily_price * Decimal(number_of_days),
+            total_cost=(
+                car.daily_price
+                * Decimal(number_of_days)
+            ),
+            amount_paid=Decimal("0.00"),
             payment_status="pending",
             status="active"
         )
 
         rental_request.status = "approved"
-        rental_request.save(update_fields=["status"])
+
+        rental_request.save(
+            update_fields=["status"]
+        )
 
         car.status = "rented"
-        car.save(update_fields=["status"])
+
+        car.save(
+            update_fields=["status"]
+        )
 
     messages.success(
         request,
         "Rental request approved successfully."
     )
 
-    return redirect("rental_request_list")
-
+    return redirect(
+        "rental_request_list"
+    )
 @staff_member_required
 @require_POST
 def reject_rental_request(request, pk):
