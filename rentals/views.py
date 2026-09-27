@@ -560,11 +560,6 @@ def reject_rental_request(request, pk):
 @require_POST
 def update_rental_payment(request, pk):
 
-    rental = get_object_or_404(
-        Rental,
-        pk=pk
-    )
-
     amount = request.POST.get(
         "amount"
     )
@@ -581,7 +576,7 @@ def update_rental_payment(request, pk):
 
         return redirect(
             "rental_detail",
-            pk=rental.pk
+            pk=pk
         )
 
     if amount <= 0:
@@ -593,43 +588,65 @@ def update_rental_payment(request, pk):
 
         return redirect(
             "rental_detail",
-            pk=rental.pk
+            pk=pk
         )
 
-    remaining_balance = (
-        rental.total_cost
-        - rental.amount_paid
-    )
+    with transaction.atomic():
 
-    if amount > remaining_balance:
-
-        messages.error(
-            request,
-            "Payment cannot be greater than the remaining balance."
+        rental = get_object_or_404(
+            Rental.objects.select_for_update(),
+            pk=pk
         )
 
-        return redirect(
-            "rental_detail",
-            pk=rental.pk
+        remaining_balance = (
+            rental.total_cost
+            - rental.amount_paid
         )
 
-    rental.amount_paid += amount
+        if remaining_balance <= 0:
 
-    if rental.amount_paid >= rental.total_cost:
-        rental.payment_status = "paid"
+            messages.warning(
+                request,
+                "This rental has already been fully paid."
+            )
 
-    elif rental.amount_paid > 0:
-        rental.payment_status = "partial"
+            return redirect(
+                "rental_detail",
+                pk=rental.pk
+            )
 
-    else:
-        rental.payment_status = "pending"
+        if amount > remaining_balance:
 
-    rental.save(
-        update_fields=[
-            "amount_paid",
-            "payment_status",
-        ]
-    )
+            messages.error(
+                request,
+                "Payment cannot be greater than the remaining balance."
+            )
+
+            return redirect(
+                "rental_detail",
+                pk=rental.pk
+            )
+
+        rental.amount_paid += amount
+
+        if rental.amount_paid >= rental.total_cost:
+
+            rental.payment_status = "paid"
+
+        elif rental.amount_paid > 0:
+
+            rental.payment_status = "partial"
+
+        else:
+
+            rental.payment_status = "pending"
+
+        rental.save(
+            update_fields=[
+                "amount_paid",
+                "payment_status",
+            ]
+        )
 
     messages.success(
         request,
