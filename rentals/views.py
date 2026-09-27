@@ -148,33 +148,34 @@ def rental_list(request):
     )
 @staff_member_required
 @login_required
+@require_POST
 def rental_return(request, pk):
 
-    rental = get_object_or_404(
-        Rental,
-        pk=pk
-    )
-
-    if request.method != "POST":
-        return redirect(
-            "rental_list"
-        )
-
-    if rental.status != "active":
-
-        messages.error(
-            request,
-            "This rental has already been returned."
-        )
-
-        return redirect(
-            "rental_detail",
-            pk=rental.pk
-        )
-
-    return_date = timezone.now().date()
-
     with transaction.atomic():
+
+        rental = get_object_or_404(
+            Rental.objects.select_for_update(),
+            pk=pk
+        )
+
+        if rental.status != "active":
+
+            messages.error(
+                request,
+                "This rental has already been returned."
+            )
+
+            return redirect(
+                "rental_detail",
+                pk=rental.pk
+            )
+
+        car = get_object_or_404(
+            Car.objects.select_for_update(),
+            pk=rental.car_id
+        )
+
+        return_date = timezone.now().date()
 
         rental.actual_return_date = return_date
         rental.status = "returned"
@@ -185,8 +186,6 @@ def rental_return(request, pk):
                 "status",
             ]
         )
-
-        car = rental.car
 
         car.status = "returned"
 
