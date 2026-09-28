@@ -58,12 +58,13 @@ class Rental(models.Model):
     )
 
     status = models.CharField(
-        max_length=20,
-        choices=[
-            ("active", "Active"),
-            ("returned", "Returned"),
-        ],
-        default="active"
+    max_length=20,
+    choices=[
+        ("booked", "Booked"),
+        ("active", "Active"),
+        ("returned", "Returned"),
+    ],
+    default="active"
     )
 
     created_at = models.DateTimeField(

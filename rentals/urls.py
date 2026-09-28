@@ -43,6 +43,12 @@ urlpatterns = [
     ),
 
     path(
+        "<int:pk>/start/",
+        views.start_rental,
+        name="start_rental"
+    ),
+
+    path(
         "<int:pk>/inspect/",
         views.inspect_returned_car,
         name="inspect_returned_car"

@@ -135,9 +135,16 @@
 
 
 {% if user.is_staff %}
+    {% if rental.status == "booked" %}
 
-    {% if rental.status == "active" %}
+        <form method="post" action="{% url 'start_rental' rental.pk %}" style="margin-top: 20px;">
+            {% csrf_token %}
+            <button type="submit" class="btn">
+                Start Rental
+            </button>
+        </form>
 
+    {% elif rental.status == "active" %}
         <form
             method="post"
             action="{% url 'rental_return' rental.pk %}"

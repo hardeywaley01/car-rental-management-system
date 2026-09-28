@@ -155,6 +155,86 @@ def rental_list(request):
 @staff_member_required
 @login_required
 @require_POST
+def start_rental(request, pk):
+
+    with transaction.atomic():
+
+        rental = get_object_or_404(
+            Rental.objects.select_for_update(),
+            pk=pk
+        )
+
+        # Only a booked rental can be started
+        if rental.status != "booked":
+
+            messages.error(
+                request,
+                "Only booked rentals can be started."
+            )
+
+            return redirect(
+                "rental_detail",
+                pk=rental.pk
+            )
+
+        # Prevent starting the rental before its scheduled date
+        if rental.rental_date > timezone.localdate():
+
+            messages.error(
+                request,
+                "This rental cannot be started before its scheduled rental date."
+            )
+
+            return redirect(
+                "rental_detail",
+                pk=rental.pk
+            )
+
+        # Lock the car while the rental is being started
+        car = get_object_or_404(
+            Car.objects.select_for_update(),
+            pk=rental.car_id
+        )
+
+        # The car must still be physically available
+        if car.status != "available":
+
+            messages.error(
+                request,
+                "This car is not currently available."
+            )
+
+            return redirect(
+                "rental_detail",
+                pk=rental.pk
+            )
+
+        # Change the booking into an active rental
+        rental.status = "active"
+
+        rental.save(
+            update_fields=["status"]
+        )
+
+        # The customer now has the car
+        car.status = "rented"
+
+        car.save(
+            update_fields=["status"]
+        )
+
+    messages.success(
+        request,
+        "Rental started successfully."
+    )
+
+    return redirect(
+        "rental_detail",
+        pk=rental.pk
+    )
+@staff_member_required
+@login_required
+@require_POST
 def rental_return(request, pk):
 
     with transaction.atomic():
@@ -466,11 +546,11 @@ def approve_rental_request(request, pk):
             pk=rental_request.car_id
         )
 
-        if car.status != "available":
+        if car.status not in ["available", "rented"]:
 
             messages.error(
                 request,
-                "This car is no longer available."
+                "This car is not currently available for booking."
             )
 
             return redirect(
@@ -493,6 +573,25 @@ def approve_rental_request(request, pk):
                 "rental_request_list"
             )
 
+        overlapping_rental = Rental.objects.filter(
+            car=car,
+            status__in=["booked", "active"],
+            rental_date__lt=rental_request.expected_return_date,
+            expected_return_date__gt=rental_request.rental_date,
+        ).exists()
+
+        if overlapping_rental:
+
+            messages.error(
+                request,
+                "This car already has a booking that overlaps "
+                "with the requested dates."
+            )
+
+            return redirect(
+                "rental_request_list"
+            )
+
         Rental.objects.create(
             customer=rental_request.customer,
             car=car,
@@ -505,7 +604,7 @@ def approve_rental_request(request, pk):
             ),
             amount_paid=Decimal("0.00"),
             payment_status="pending",
-            status="active"
+            status="booked"
         )
 
         rental_request.status = "approved"
@@ -514,15 +613,9 @@ def approve_rental_request(request, pk):
             update_fields=["status"]
         )
 
-        car.status = "rented"
-
-        car.save(
-            update_fields=["status"]
-        )
-
     messages.success(
         request,
-        "Rental request approved successfully."
+        "Rental request approved and booking created successfully."
     )
 
     return redirect(
