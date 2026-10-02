@@ -1,16 +1,19 @@
 {% extends "base.html" %}
 
-
 {% block title %}
 Rentals
 {% endblock %}
-
 
 {% block content %}
 
 <h1 class="page-title">
     Rentals
 </h1>
+
+<!-- =========================
+     SEARCH AND FILTER
+========================= -->
+
 <div class="card">
 
     <form method="GET">
@@ -28,45 +31,50 @@ Rentals
                 All Rentals
             </option>
 
-            <option value="active"
-                {% if status == "active" %}selected{% endif %}>
+            <option
+                value="booked"
+                {% if status == "booked" %}selected{% endif %}
+            >
+                Booked
+            </option>
+
+            <option
+                value="active"
+                {% if status == "active" %}selected{% endif %}
+            >
                 Active
             </option>
 
-            <option value="returned"
-                {% if status == "returned" %}selected{% endif %}>
+            <option
+                value="returned"
+                {% if status == "returned" %}selected{% endif %}
+            >
                 Returned
             </option>
 
         </select>
 
-        <button type="submit" class="btn">
+        <button
+            type="submit"
+            class="btn"
+        >
             Search
         </button>
 
-        <a href="{% url 'rental_list' %}" class="btn">
+        <a
+            href="{% url 'rental_list' %}"
+            class="btn"
+        >
             Clear
         </a>
 
     </form>
 
 </div>
-<form method="GET">
 
-    <input
-        type="text"
-        name="search"
-        placeholder="Search rental..."
-        value="{{ search }}"
-    >
-
-    <button type="submit" class="btn">
-        Search
-    </button>
-
-</form>
 
 <br>
+
 <a
     class="btn"
     href="{% url 'rental_create' %}"
@@ -74,63 +82,122 @@ Rentals
     + Create Rental
 </a>
 
-
 <br>
 <br>
 
+
+<!-- =========================
+     RENTALS
+========================= -->
 
 {% for rental in rentals %}
 
-<div class="card">
+    <div class="card">
 
-    <h2>
-        {{ rental.car.brand }}
-        {{ rental.car.model }}
-    </h2>
+        <h2>
+            {{ rental.car.brand }}
+            {{ rental.car.model }}
+        </h2>
 
-    <p>
-        <strong>Customer:</strong>
-        {{ rental.customer.full_name }}
-    </p>
+        <p>
+            <strong>Customer:</strong>
+            {{ rental.customer.full_name }}
+        </p>
 
-    <p>
-        <strong>Rental Date:</strong>
-        {{ rental.rental_date }}
-    </p>
+        <p>
+            <strong>Plate Number:</strong>
+            {{ rental.car.plate_number }}
+        </p>
 
-    <p>
-        <strong>Expected Return:</strong>
-        {{ rental.expected_return_date }}
-    </p>
+        <p>
+            <strong>Rental Date:</strong>
+            {{ rental.rental_date }}
+        </p>
 
-    <p>
-        <strong>Status:</strong>
-        {{ rental.get_status_display }}
-    </p>
+        <p>
+            <strong>Expected Return:</strong>
+            {{ rental.expected_return_date }}
+        </p>
 
-    <p>
-        <strong>Total:</strong>
-        ₦{{ rental.total_cost }}
-    </p>
+        <p>
+            <strong>Rental Status:</strong>
+
+            <span class="status-badge status-{{ rental.status }}">
+                {{ rental.get_status_display }}
+            </span>
+        </p>
+
+        <p>
+            <strong>Payment Status:</strong>
+
+            <span class="status-badge status-{{ rental.payment_status }}">
+                {{ rental.get_payment_status_display }}
+            </span>
+        </p>
+
+        <p>
+            <strong>Total:</strong>
+            ₦{{ rental.total_cost }}
+        </p>
 
 
-    {% if rental.status == "active" %}
+        <!-- BOOKED RENTAL -->
+
+        {% if rental.status == "booked" %}
+
+            <form
+                method="POST"
+                action="{% url 'start_rental' rental.pk %}"
+                style="display: inline;"
+            >
+                {% csrf_token %}
+
+                <button
+                    type="submit"
+                    class="btn"
+                >
+                    Start Rental
+                </button>
+
+            </form>
+
+        {% endif %}
+
+
+        <!-- ACTIVE RENTAL -->
+
+        {% if rental.status == "active" %}
+
+            <form
+                method="POST"
+                action="{% url 'rental_return' rental.pk %}"
+                style="display: inline;"
+            >
+                {% csrf_token %}
+
+                <button
+                    type="submit"
+                    class="btn"
+                >
+                    Return Car
+                </button>
+
+            </form>
+
+        {% endif %}
+
+
+        <!-- VIEW DETAILS -->
 
         <a
-            class="btn"
-            href="{% url 'rental_return' rental.pk %}"
-        >
-            Return Car
-        </a>
-
-    {% endif %}
-
-                <a
             class="btn"
             href="{% url 'rental_detail' rental.pk %}"
         >
             View Details
         </a>
+
+
+        <!-- RECEIPT -->
 
         <a
             class="btn"
@@ -138,27 +205,34 @@ Rentals
         >
             Print Receipt
         </a>
-    {% if rental.status == "returned" %}
 
-       <a
-            class="btn"
-            href="{% url 'rental_detail' rental.pk %}"
-        >
-            Inspect Car
-        </a>
 
-    {% endif %}
+        <!-- RETURNED / INSPECTION -->
 
-</div>
+        {% if rental.status == "returned" and rental.car.status == "returned" %}
 
-<br>
+            <a
+                class="btn"
+                href="{% url 'rental_detail' rental.pk %}"
+            >
+                Inspect Car
+            </a>
 
+        {% endif %}
+
+    </div>
+
+    <br>
 
 {% empty %}
 
-<p>
-    No rentals found.
-</p>
+    <div class="card">
+
+        <p>
+            No rentals found.
+        </p>
+
+    </div>
 
 {% endfor %}
 

@@ -1,234 +1,488 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "base.html" %}
 
-    <title>Car Rental Management System</title>
+{% block title %}
+Car Rental Management System
+{% endblock %}
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+{% block content %}
+
+<style>
+
+    .home-hero {
+        position: relative;
+        overflow: hidden;
+        min-height: 500px;
+
+        display: flex;
+        align-items: center;
+
+        padding: 65px 55px;
+
+        border-radius: 18px;
+
+        background:
+            linear-gradient(
+                120deg,
+                rgba(15, 23, 42, 0.97),
+                rgba(15, 23, 42, 0.82)
+            );
+
+        color: white;
+
+        box-shadow:
+            0 12px 35px rgba(15, 23, 42, 0.15);
+    }
+
+    .home-hero::after {
+        content: "";
+        position: absolute;
+
+        width: 350px;
+        height: 350px;
+
+        right: -100px;
+        top: -100px;
+
+        border-radius: 50%;
+
+        background:
+            rgba(37, 99, 235, 0.18);
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+
+        max-width: 680px;
+    }
+
+    .hero-label {
+        display: inline-block;
+
+        margin-bottom: 18px;
+        padding: 7px 13px;
+
+        border-radius: 20px;
+
+        background: rgba(59, 130, 246, 0.15);
+        border: 1px solid rgba(96, 165, 250, 0.35);
+
+        color: #93c5fd;
+
+        font-size: 13px;
+        font-weight: bold;
+    }
+
+    .home-hero h1 {
+        margin: 0 0 20px;
+
+        font-size: 52px;
+        line-height: 1.1;
+    }
+
+    .home-hero h1 span {
+        color: #60a5fa;
+    }
+
+    .home-hero p {
+        max-width: 620px;
+
+        margin-bottom: 30px;
+
+        color: #cbd5e1;
+
+        font-size: 18px;
+        line-height: 1.7;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .hero-buttons .btn {
+        padding: 13px 21px;
+    }
+
+    .hero-secondary {
+        background: transparent;
+        border: 1px solid #64748b;
+    }
+
+    .hero-secondary:hover {
+        background: #334155;
+    }
+
+
+    /* FEATURES */
+
+    .home-section {
+        padding: 65px 0 20px;
+    }
+
+    .home-section-header {
+        max-width: 650px;
+        margin: 0 auto 35px;
+        text-align: center;
+    }
+
+    .home-section-header h2 {
+        margin-bottom: 10px;
+
+        color: #0f172a;
+        font-size: 32px;
+    }
+
+    .home-section-header p {
+        color: #64748b;
+        line-height: 1.6;
+    }
+
+    .feature-grid {
+        display: grid;
+
+        grid-template-columns:
+            repeat(3, 1fr);
+
+        gap: 22px;
+    }
+
+    .feature-card {
+        padding: 28px;
+
+        background: white;
+
+        border: 1px solid #e5e7eb;
+        border-radius: 13px;
+
+        box-shadow:
+            0 4px 14px rgba(15, 23, 42, 0.05);
+    }
+
+    .feature-number {
+        width: 42px;
+        height: 42px;
+
+        margin-bottom: 18px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 10px;
+
+        background: #dbeafe;
+        color: #1d4ed8;
+
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    .feature-card h3 {
+        margin: 0 0 10px;
+
+        color: #0f172a;
+    }
+
+    .feature-card p {
+        margin: 0;
+
+        color: #64748b;
+
+        line-height: 1.6;
+    }
+
+
+    /* HOW IT WORKS */
+
+    .steps {
+        margin-top: 45px;
+        padding: 35px;
+
+        background: white;
+
+        border: 1px solid #e5e7eb;
+        border-radius: 15px;
+    }
+
+    .steps h2 {
+        margin-top: 0;
+        color: #0f172a;
+    }
+
+    .steps-grid {
+        display: grid;
+
+        grid-template-columns:
+            repeat(3, 1fr);
+
+        gap: 25px;
+
+        margin-top: 25px;
+    }
+
+    .step strong {
+        display: block;
+        margin-bottom: 7px;
+        color: #2563eb;
+    }
+
+    .step p {
+        margin: 0;
+        color: #64748b;
+        line-height: 1.6;
+    }
+
+
+    @media (max-width: 800px) {
+
+        .home-hero {
+            min-height: auto;
+            padding: 45px 30px;
         }
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #0b1220;
-            color: white;
+        .home-hero h1 {
+            font-size: 39px;
         }
 
-        nav {
-            height: 70px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 7%;
-            background: #111827;
+        .feature-grid,
+        .steps-grid {
+            grid-template-columns: 1fr;
         }
 
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #38bdf8;
+    }
+
+
+    @media (max-width: 500px) {
+
+        .home-hero {
+            padding: 35px 22px;
         }
 
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin-left: 25px;
+        .home-hero h1 {
+            font-size: 32px;
         }
 
-        .login-btn {
-            background: #2563eb;
-            padding: 10px 18px;
-            border-radius: 6px;
+        .home-hero p {
+            font-size: 16px;
         }
 
-        .hero {
-            min-height: calc(100vh - 70px);
-            display: flex;
-            align-items: center;
-            padding: 60px 7%;
-            background:
-                linear-gradient(rgba(11,18,32,0.82), rgba(11,18,32,0.95)),
-                url("https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1600&q=80")
-                center/cover;
-        }
-
-        .hero-content {
-            max-width: 650px;
-        }
-
-        .hero h1 {
-            font-size: 58px;
-            line-height: 1.1;
-            margin-bottom: 20px;
-        }
-
-        .hero h1 span {
-            color: #38bdf8;
-        }
-
-        .hero p {
-            font-size: 19px;
-            line-height: 1.7;
-            color: #d1d5db;
-            margin-bottom: 30px;
-        }
-
-        .buttons a {
-            display: inline-block;
-            text-decoration: none;
-            padding: 14px 24px;
-            border-radius: 7px;
-            margin-right: 12px;
-            font-weight: bold;
-        }
-
-        .primary {
-            background: #2563eb;
-            color: white;
-        }
-
-        .secondary {
-            border: 1px solid #64748b;
-            color: white;
-        }
-
-        .features {
-            padding: 70px 7%;
-            background: #0f172a;
-            text-align: center;
-        }
-
-        .features h2 {
-            font-size: 34px;
-            margin-bottom: 40px;
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 25px;
-        }
-
-        .feature {
-            background: #111827;
-            padding: 30px;
-            border-radius: 12px;
-            border: 1px solid #1e293b;
-        }
-
-        .feature h3 {
-            color: #38bdf8;
-            margin-bottom: 12px;
-        }
-
-        .feature p {
-            color: #cbd5e1;
-            line-height: 1.6;
-        }
-
-        footer {
-            text-align: center;
+        .steps {
             padding: 25px;
-            background: #080d17;
-            color: #94a3b8;
         }
 
-        @media (max-width: 800px) {
-            .hero h1 {
-                font-size: 40px;
-            }
+    }
 
-            .feature-grid {
-                grid-template-columns: 1fr;
-            }
+</style>
 
-            nav {
-                padding: 0 5%;
-            }
-        }
-    </style>
-</head>
 
-<body>
+<section class="home-hero">
 
-    <nav>
-        <div class="logo">CAR RENTAL</div>
+    <div class="hero-content">
 
-        <div>
-            <a href="/">Home</a>
-            <a href="/login/" class="login-btn">Staff Login</a>
+        <span class="hero-label">
+            CAR RENTAL MANAGEMENT SYSTEM
+        </span>
+
+        <h1>
+            Find the Right Car.
+            <span>Book with Ease.</span>
+        </h1>
+
+        <p>
+            A simple and reliable platform for customers to
+            request vehicles and manage their rentals, while
+            staff can efficiently manage cars, customers,
+            bookings, payments and returns.
+        </p>
+
+
+        <div class="hero-buttons">
+
+            {% if user.is_authenticated %}
+
+                {% if user.is_staff %}
+
+                    <a
+                        href="{% url 'dashboard' %}"
+                        class="btn"
+                    >
+                        Go to Dashboard
+                    </a>
+
+                    <a
+                        href="{% url 'car_list' %}"
+                        class="btn hero-secondary"
+                    >
+                        Manage Cars
+                    </a>
+
+                {% else %}
+
+                    <a
+                        href="{% url 'customer_dashboard' %}"
+                        class="btn"
+                    >
+                        My Dashboard
+                    </a>
+
+                {% endif %}
+
+            {% else %}
+
+                <a
+                    href="{% url 'register' %}"
+                    class="btn"
+                >
+                    Create Customer Account
+                </a>
+
+                <a
+                    href="{% url 'login' %}"
+                    class="btn hero-secondary"
+                >
+                    Login
+                </a>
+
+            {% endif %}
+
         </div>
-    </nav>
 
-    <section class="hero">
-        <div class="hero-content">
-
-            <h1>
-                Find Your Perfect
-                <span>Ride.</span>
-            </h1>
-
-            <p>
-                A simple and reliable car rental platform where
-                customers can browse available vehicles, submit
-                rental requests, and manage their rentals.
-            </p>
-
-            <div class="buttons">
-        <a href="{% url 'register' %}" class="primary">
-            Create Customer Account
-        </a>
-
-        <a href="/cars/" class="secondary">
-            Browse Cars
-        </a>
     </div>
 
+</section>
+
+
+
+<section class="home-section">
+
+    <div class="home-section-header">
+
+        <h2>
+            Everything in One Place
+        </h2>
+
+        <p>
+            The system provides a simple workflow for customers
+            and staff throughout the rental process.
+        </p>
+
+    </div>
+
+
+    <div class="feature-grid">
+
+        <div class="feature-card">
+
+            <div class="feature-number">
+                01
+            </div>
+
+            <h3>
+                Vehicle Management
+            </h3>
+
+            <p>
+                Keep track of available, rented, returned and
+                maintenance vehicles from one system.
+            </p>
+
         </div>
-    </section>
 
-    <section class="features">
 
-        <h2>Why Use Our Platform?</h2>
+        <div class="feature-card">
 
-        <div class="feature-grid">
-
-            <div class="feature">
-                <h3>🚗 Quality Cars</h3>
-                <p>
-                    Browse vehicles and check their availability
-                    before making a rental request.
-                </p>
+            <div class="feature-number">
+                02
             </div>
 
-            <div class="feature">
-                <h3>📋 Easy Requests</h3>
-                <p>
-                    Customers can submit rental requests without
-                    complicated procedures.
-                </p>
+            <h3>
+                Rental Requests
+            </h3>
+
+            <p>
+                Customers can choose rental dates and submit
+                requests for suitable vehicles.
+            </p>
+
+        </div>
+
+
+        <div class="feature-card">
+
+            <div class="feature-number">
+                03
             </div>
 
-            <div class="feature">
-                <h3>🔒 Secure Management</h3>
+            <h3>
+                Rental Tracking
+            </h3>
+
+            <p>
+                Staff can manage bookings, active rentals,
+                payments, vehicle returns and inspections.
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="steps">
+
+        <h2>
+            How It Works
+        </h2>
+
+        <div class="steps-grid">
+
+            <div class="step">
+
+                <strong>
+                    Step 1 — Create an Account
+                </strong>
+
                 <p>
-                    Staff can manage customers, cars, rentals,
-                    payments and returns from one system.
+                    Register as a customer and access your
+                    personal rental dashboard.
                 </p>
+
+            </div>
+
+
+            <div class="step">
+
+                <strong>
+                    Step 2 — Request a Vehicle
+                </strong>
+
+                <p>
+                    Select a vehicle and submit your preferred
+                    rental and return dates.
+                </p>
+
+            </div>
+
+
+            <div class="step">
+
+                <strong>
+                    Step 3 — Manage Your Rental
+                </strong>
+
+                <p>
+                    Follow your request, booking and rental
+                    status directly from your dashboard.
+                </p>
+
             </div>
 
         </div>
 
-    </section>
+    </div>
 
-    <footer>
-        © 2026 Car Rental Management System. All rights reserved.
-    </footer>
+</section>
 
-</body>
-</html>
+{% endblock %}

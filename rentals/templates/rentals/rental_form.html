@@ -1,10 +1,8 @@
 {% extends "base.html" %}
 
-
 {% block title %}
 Create Rental
 {% endblock %}
-
 
 {% block content %}
 
@@ -12,28 +10,122 @@ Create Rental
     Create Rental
 </h1>
 
-<select name="car" id="id_car" required>
-    <option value="">---------</option>
-
-    {% for car in form.car.field.queryset %}
-        <option
-            value="{{ car.pk }}"
-            data-price="{{ car.daily_price }}"
-            {% if form.car.value|stringformat:"s" == car.pk|stringformat:"s" %}
-                selected
-            {% endif %}
-        >
-            {{ car.brand }} {{ car.model }} ({{ car.plate_number }})
-        </option>
-    {% endfor %}
-</select>
 <div class="card">
+
+    <h2>Rental Information</h2>
 
     <form method="POST">
 
         {% csrf_token %}
 
-        {{ form.as_p }}
+        <!-- CAR -->
+
+        <p>
+            <label for="id_car">
+                Car:
+            </label>
+
+            <select name="car" id="id_car" required>
+
+                <option value="">
+                    Select a car
+                </option>
+
+                {% for car in form.car.field.queryset %}
+
+                    <option
+                        value="{{ car.pk }}"
+                        data-price="{{ car.daily_price }}"
+                        {% if form.car.value|stringformat:"s" == car.pk|stringformat:"s" %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ car.brand }}
+                        {{ car.model }}
+                        ({{ car.plate_number }})
+                        - ₦{{ car.daily_price }}/day
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+            {% if form.car.errors %}
+                {{ form.car.errors }}
+            {% endif %}
+        </p>
+
+
+        <!-- CUSTOMER -->
+
+        <p>
+            <label for="{{ form.customer.id_for_label }}">
+                Customer:
+            </label>
+
+            {{ form.customer }}
+
+            {% if form.customer.errors %}
+                {{ form.customer.errors }}
+            {% endif %}
+        </p>
+
+
+        <!-- RENTAL DATE -->
+
+        <p>
+            <label for="{{ form.rental_date.id_for_label }}">
+                Rental Date:
+            </label>
+
+            {{ form.rental_date }}
+
+            {% if form.rental_date.errors %}
+                {{ form.rental_date.errors }}
+            {% endif %}
+        </p>
+
+
+        <!-- EXPECTED RETURN -->
+
+        <p>
+            <label for="{{ form.expected_return_date.id_for_label }}">
+                Expected Return Date:
+            </label>
+
+            {{ form.expected_return_date }}
+
+            {% if form.expected_return_date.errors %}
+                {{ form.expected_return_date.errors }}
+            {% endif %}
+        </p>
+
+
+        <!-- DAILY PRICE -->
+
+        <p>
+            <label for="{{ form.daily_price.id_for_label }}">
+                Daily Price:
+            </label>
+
+            {{ form.daily_price }}
+
+            {% if form.daily_price.errors %}
+                {{ form.daily_price.errors }}
+            {% endif %}
+        </p>
+
+
+        <!-- FORM ERRORS -->
+
+        {% if form.non_field_errors %}
+
+            <div class="error-message">
+                {{ form.non_field_errors }}
+            </div>
+
+        {% endif %}
+
 
         <button
             type="submit"
@@ -42,29 +134,59 @@ Create Rental
             Create Rental
         </button>
 
+        <a
+            href="{% url 'rental_list' %}"
+            class="btn"
+        >
+            Cancel
+        </a>
+
     </form>
 
 </div>
+
+
 <script>
-    const carSelect = document.getElementById("id_car");
-    const priceInput = document.getElementById("id_daily_price");
+
+    const carSelect =
+        document.getElementById("id_car");
+
+    const priceInput =
+        document.getElementById("id_daily_price");
+
 
     function updateDailyPrice() {
+
+        if (!carSelect || !priceInput) {
+            return;
+        }
+
         const selectedOption =
             carSelect.options[carSelect.selectedIndex];
 
-        const price = selectedOption.dataset.price;
+        const price =
+            selectedOption.dataset.price;
 
         if (price) {
             priceInput.value = price;
         } else {
             priceInput.value = "";
         }
+
     }
 
-    carSelect.addEventListener("change", updateDailyPrice);
 
-    updateDailyPrice();
+    if (carSelect) {
+
+        carSelect.addEventListener(
+            "change",
+            updateDailyPrice
+        );
+
+        updateDailyPrice();
+
+    }
+
 </script>
 
 {% endblock %}

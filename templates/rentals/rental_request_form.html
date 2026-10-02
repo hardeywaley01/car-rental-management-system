@@ -1,157 +1,158 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "base.html" %}
 
-    <title>Request Car Rental</title>
+{% block title %}
+Request Car Rental
+{% endblock %}
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+{% block content %}
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            font-family: Arial, sans-serif;
-            background: #0b1220;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 30px 15px;
-        }
+<h1 class="page-title">
+    Request Car Rental
+</h1>
 
-        .request-card {
-            width: 100%;
-            max-width: 520px;
-            background: #111827;
-            border: 1px solid #1e293b;
-            border-radius: 14px;
-            padding: 32px;
-        }
+<div class="card">
 
-        h1 {
-            margin-top: 0;
-            margin-bottom: 8px;
-        }
+    <h2>
+        {{ car.brand }} {{ car.model }}
+    </h2>
 
-        .car-name {
-            color: #38bdf8;
-            font-size: 20px;
-            margin-bottom: 25px;
-        }
+    <p>
+        <strong>Plate Number:</strong>
+        {{ car.plate_number }}
+    </p>
 
-        .car-info {
-            background: #0f172a;
-            padding: 18px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-        }
+    <p>
+        <strong>Year:</strong>
+        {{ car.year }}
+    </p>
 
-        .car-info p {
-            margin: 8px 0;
-            color: #cbd5e1;
-        }
+    <p>
+        <strong>Transmission:</strong>
+        {{ car.get_transmission_display }}
+    </p>
 
-        form p {
-            margin-bottom: 18px;
-        }
+    <p>
+        <strong>Fuel Type:</strong>
+        {{ car.get_fuel_type_display }}
+    </p>
 
-        label {
-            display: block;
-            margin-bottom: 7px;
-            font-weight: bold;
-        }
+    <p>
+        <strong>Seats:</strong>
+        {{ car.seats }}
+    </p>
 
-        input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #334155;
-            border-radius: 7px;
-            background: #0f172a;
-            color: white;
-        }
+    <p>
+        <strong>Price Per Day:</strong>
+        ₦{{ car.daily_price|floatformat:2 }}
+    </p>
 
-        .errorlist {
-            color: #f87171;
-        }
+    <p>
+        <strong>Current Car Status:</strong>
 
-        button {
-            width: 100%;
-            padding: 13px;
-            border: none;
-            border-radius: 7px;
-            background: #2563eb;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+        <span class="status-badge status-{{ car.status }}">
+            {{ car.get_status_display }}
+        </span>
+    </p>
 
-        button:hover {
-            background: #1d4ed8;
-        }
+    {% if car.status == "rented" %}
 
-        .back {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            color: #38bdf8;
-            text-decoration: none;
-        }
-    </style>
-</head>
+        <p>
+            <strong>Note:</strong>
+            This vehicle is currently rented, but you can still
+            request it for future available dates.
+        </p>
 
-<body>
+    {% endif %}
 
-    <div class="request-card">
+</div>
 
-        <h1>Request Car Rental</h1>
 
-        <div class="car-name">
-            {{ car.brand }} {{ car.model }}
-        </div>
+<div class="card">
 
-        <div class="car-info">
-            <p>Year: {{ car.year }}</p>
+    <h2>
+        Select Rental Dates
+    </h2>
 
-            <p>
-                Transmission:
-                {{ car.get_transmission_display }}
-            </p>
+    <p>
+        Choose your preferred rental and return dates.
+        Dates that conflict with an existing booking or request
+        will not be accepted.
+    </p>
 
-            <p>
-                Seats: {{ car.seats }}
-            </p>
+    <form method="POST">
 
-            <p>
-                Price per day:
-                <strong>₦{{ car.daily_price }}</strong>
-            </p>
-        </div>
+        {% csrf_token %}
 
-        <form method="POST">
 
-            {% csrf_token %}
+        <!-- RENTAL DATE -->
 
-            {{ form.as_p }}
+        <p>
 
-            <button type="submit">
-                Submit Rental Request
-            </button>
+            <label for="{{ form.rental_date.id_for_label }}">
+                <strong>Rental Date:</strong>
+            </label>
 
-        </form>
+            {{ form.rental_date }}
+
+            {% if form.rental_date.errors %}
+
+                <div class="error-message">
+                    {{ form.rental_date.errors }}
+                </div>
+
+            {% endif %}
+
+        </p>
+
+
+        <!-- EXPECTED RETURN DATE -->
+
+        <p>
+
+            <label for="{{ form.expected_return_date.id_for_label }}">
+                <strong>Expected Return Date:</strong>
+            </label>
+
+            {{ form.expected_return_date }}
+
+            {% if form.expected_return_date.errors %}
+
+                <div class="error-message">
+                    {{ form.expected_return_date.errors }}
+                </div>
+
+            {% endif %}
+
+        </p>
+
+
+        <!-- GENERAL FORM ERRORS -->
+
+        {% if form.non_field_errors %}
+
+            <div class="error-message">
+                {{ form.non_field_errors }}
+            </div>
+
+        {% endif %}
+
+
+        <button
+            type="submit"
+            class="btn"
+        >
+            Submit Rental Request
+        </button>
 
         <a
             href="{% url 'customer_dashboard' %}"
-            class="back"
+            class="btn"
         >
-            ← Back to Dashboard
+            Cancel
         </a>
 
-    </div>
+    </form>
 
-</body>
-</html>
+</div>
+
+{% endblock %}

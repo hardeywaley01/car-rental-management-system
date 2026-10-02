@@ -8,12 +8,28 @@ Rental Receipt
 
 <div class="card receipt">
 
+    <!-- =========================
+         RECEIPT HEADER
+    ========================= -->
+
     <div class="receipt-header">
-        <h1>M-TECH CAR RENTAL</h1>
-        <p>Rental Receipt</p>
+
+        <h1>
+            M-TECH CAR RENTAL
+        </h1>
+
+        <p>
+            Official Rental Receipt
+        </p>
+
     </div>
 
     <hr>
+
+
+    <!-- =========================
+         RECEIPT INFORMATION
+    ========================= -->
 
     <div class="receipt-row">
         <strong>Receipt No:</strong>
@@ -22,109 +38,231 @@ Rental Receipt
 
     <div class="receipt-row">
         <strong>Date Issued:</strong>
-        <span>{{ rental.created_at|date:"d M Y" }}</span>
+        <span>
+            {{ rental.created_at|date:"d M Y" }}
+        </span>
     </div>
 
-    <h3>Customer Information</h3>
+
+    <!-- =========================
+         CUSTOMER INFORMATION
+    ========================= -->
+
+    <h3>
+        Customer Information
+    </h3>
 
     <div class="receipt-row">
         <strong>Name:</strong>
-        <span>{{ rental.customer.full_name }}</span>
+        <span>
+            {{ rental.customer.full_name }}
+        </span>
     </div>
 
     <div class="receipt-row">
         <strong>Phone:</strong>
-        <span>{{ rental.customer.phone }}</span>
+        <span>
+            {{ rental.customer.phone }}
+        </span>
     </div>
 
     <div class="receipt-row">
         <strong>Driver's License:</strong>
-        <span>{{ rental.customer.driver_license }}</span>
+        <span>
+            {{ rental.customer.driver_license }}
+        </span>
     </div>
 
-    <h3>Vehicle Information</h3>
+
+    <!-- =========================
+         VEHICLE INFORMATION
+    ========================= -->
+
+    <h3>
+        Vehicle Information
+    </h3>
 
     <div class="receipt-row">
         <strong>Vehicle:</strong>
+
         <span>
-            {{ rental.car.brand }} {{ rental.car.model }}
+            {{ rental.car.brand }}
+            {{ rental.car.model }}
         </span>
     </div>
 
     <div class="receipt-row">
         <strong>Plate Number:</strong>
-        <span>{{ rental.car.plate_number }}</span>
+
+        <span>
+            {{ rental.car.plate_number }}
+        </span>
     </div>
 
     <div class="receipt-row">
         <strong>Color:</strong>
-        <span>{{ rental.car.color }}</span>
+
+        <span>
+            {{ rental.car.color }}
+        </span>
     </div>
 
     <div class="receipt-row">
         <strong>Transmission:</strong>
-        <span>{{ rental.car.get_transmission_display }}</span>
+
+        <span>
+            {{ rental.car.get_transmission_display }}
+        </span>
     </div>
 
-    <h3>Rental Information</h3>
+
+    <!-- =========================
+         RENTAL INFORMATION
+    ========================= -->
+
+    <h3>
+        Rental Information
+    </h3>
 
     <div class="receipt-row">
         <strong>Rental Date:</strong>
-        <span>{{ rental.rental_date|date:"d M Y" }}</span>
+
+        <span>
+            {{ rental.rental_date|date:"d M Y" }}
+        </span>
     </div>
 
     <div class="receipt-row">
         <strong>Expected Return:</strong>
+
         <span>
             {{ rental.expected_return_date|date:"d M Y" }}
         </span>
     </div>
 
     {% if rental.actual_return_date %}
-    <div class="receipt-row">
-        <strong>Actual Return:</strong>
-        <span>
-            {{ rental.actual_return_date|date:"d M Y" }}
-        </span>
-    </div>
+
+        <div class="receipt-row">
+
+            <strong>Actual Return:</strong>
+
+            <span>
+                {{ rental.actual_return_date|date:"d M Y" }}
+            </span>
+
+        </div>
+
     {% endif %}
 
     <div class="receipt-row">
         <strong>Rental Days:</strong>
-        <span>{{ rental_days }}</span>
+
+        <span>
+            {{ rental_days }}
+        </span>
     </div>
 
     <div class="receipt-row">
         <strong>Daily Price:</strong>
-        <span>₦{{ rental.daily_price }}</span>
+
+        <span>
+            ₦{{ rental.daily_price|floatformat:2 }}
+        </span>
+    </div>
+
+
+    <!-- =========================
+         PAYMENT INFORMATION
+    ========================= -->
+
+    <h3>
+        Payment Information
+    </h3>
+
+    <div class="receipt-row">
+
+        <strong>Total Cost:</strong>
+
+        <span>
+            ₦{{ rental.total_cost|floatformat:2 }}
+        </span>
+
+    </div>
+
+    <div class="receipt-row">
+
+        <strong>Amount Paid:</strong>
+
+        <span>
+            ₦{{ rental.amount_paid|floatformat:2 }}
+        </span>
+
+    </div>
+
+    <div class="receipt-row">
+
+        <strong>Balance:</strong>
+
+        <span>
+            ₦{{ rental.balance|floatformat:2 }}
+        </span>
+
+    </div>
+
+    <div class="receipt-row">
+
+        <strong>Payment Status:</strong>
+
+        <span class="status-badge status-{{ rental.payment_status }}">
+            {{ rental.get_payment_status_display }}
+        </span>
+
+    </div>
+
+
+    <!-- =========================
+         RENTAL STATUS
+    ========================= -->
+
+    <div class="receipt-row">
+
+        <strong>Rental Status:</strong>
+
+        <span class="status-badge status-{{ rental.status }}">
+            {{ rental.get_status_display }}
+        </span>
+
     </div>
 
     <hr>
 
-    <div class="receipt-total">
-        <strong>Total Cost:</strong>
-        <strong>₦{{ rental.total_cost }}</strong>
+
+    <!-- =========================
+         PRINT
+    ========================= -->
+
+    <div class="print-button">
+
+        <button
+            type="button"
+            onclick="window.print()"
+            class="btn"
+        >
+            Print Receipt
+        </button>
+
     </div>
-
-    <div class="receipt-row">
-        <strong>Payment:</strong>
-        <span>{{ rental.get_payment_status_display }}</span>
-    </div>
-
-    <div class="receipt-row">
-        <strong>Rental Status:</strong>
-        <span>{{ rental.get_status_display }}</span>
-    </div>
-
-    <br>
-
-    <button
-        onclick="window.print()"
-        class="btn print-button"
-    >
-        Print Receipt
-    </button>
 
 </div>
+
+
+<br>
+
+<a
+    href="{% url 'rental_detail' rental.pk %}"
+    class="btn print-button"
+>
+    Back to Rental
+</a>
 
 {% endblock %}

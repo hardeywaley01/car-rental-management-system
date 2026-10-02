@@ -118,7 +118,7 @@ def customer_dashboard(request):
         )
 
     available_cars = Car.objects.filter(
-        status="available"
+        status__in=["available", "rented"]
     )
 
     rental_requests = RentalRequest.objects.filter(
@@ -127,6 +127,15 @@ def customer_dashboard(request):
         "car"
     ).order_by(
         "-created_at"
+    )
+
+    booked_rentals = Rental.objects.filter(
+        customer=customer,
+        status="booked"
+    ).select_related(
+        "car"
+    ).order_by(
+        "rental_date"
     )
 
     active_rentals = Rental.objects.filter(
@@ -154,16 +163,11 @@ def customer_dashboard(request):
             "customer": customer,
             "available_cars": available_cars,
             "rental_requests": rental_requests,
+            "booked_rentals": booked_rentals,
             "active_rentals": active_rentals,
             "returned_rentals": returned_rentals,
         }
     )
-
-
-# =========================================================
-# LOGIN
-# =========================================================
-
 def user_login(request):
 
     if request.user.is_authenticated:

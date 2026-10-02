@@ -69,7 +69,7 @@ class RentalRequestForm(forms.ModelForm):
 
             overlapping_rental = Rental.objects.filter(
                 car=self.car,
-                status="active",
+                status__in=["booked", "active"],
                 rental_date__lt=expected_return_date,
                 expected_return_date__gt=rental_date,
             ).exists()

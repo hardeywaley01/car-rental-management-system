@@ -6,43 +6,35 @@ Login
 
 {% block content %}
 
-<div class="card" style="max-width: 450px; margin: 50px auto;">
+<div class="card" style="max-width: 500px; margin: 50px auto;">
 
     <h1 class="page-title">
         Login
     </h1>
 
-    <p style="color: #6b7280; margin-bottom: 25px;">
-        Enter your username and password to continue.
+    <p>
+        Enter your username and password to access your account.
     </p>
 
+
     {% if error %}
-        <div style="
-            background: #fee2e2;
-            color: #991b1b;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-        ">
+
+        <div class="error-message">
             {{ error }}
         </div>
+
     {% endif %}
+
 
     <form method="POST">
 
         {% csrf_token %}
 
-        <div style="margin-bottom: 20px;">
 
-            <label
-                for="username"
-                style="
-                    display: block;
-                    margin-bottom: 8px;
-                    font-weight: bold;
-                "
-            >
-                Username
+        <p>
+
+            <label for="username">
+                <strong>Username:</strong>
             </label>
 
             <input
@@ -51,29 +43,16 @@ Login
                 name="username"
                 required
                 autocomplete="username"
-                style="
-                    width: 100%;
-                    padding: 12px;
-                    border: 1px solid #d1d5db;
-                    border-radius: 6px;
-                    font-size: 16px;
-                "
+                autofocus
             >
 
-        </div>
+        </p>
 
 
-        <div style="margin-bottom: 25px;">
+        <p>
 
-            <label
-                for="password"
-                style="
-                    display: block;
-                    margin-bottom: 8px;
-                    font-weight: bold;
-                "
-            >
-                Password
+            <label for="password">
+                <strong>Password:</strong>
             </label>
 
             <input
@@ -82,31 +61,25 @@ Login
                 name="password"
                 required
                 autocomplete="current-password"
-                style="
-                    width: 100%;
-                    padding: 12px;
-                    border: 1px solid #d1d5db;
-                    border-radius: 6px;
-                    font-size: 16px;
-                "
             >
 
-        </div>
+        </p>
 
 
         {% if request.GET.next %}
+
             <input
                 type="hidden"
                 name="next"
                 value="{{ request.GET.next }}"
             >
+
         {% endif %}
 
 
         <button
             type="submit"
             class="btn"
-            style="width: 100%;"
         >
             Login
         </button>
@@ -114,14 +87,14 @@ Login
     </form>
 
 
-    <p style="
-        margin-top: 25px;
-        text-align: center;
-        color: #6b7280;
-    ">
+    <hr>
+
+    <p>
         Don't have a customer account?
 
-        <a href="{% url 'register' %}">
+        <a
+            href="{% url 'register' %}"
+        >
             Create Account
         </a>
     </p>

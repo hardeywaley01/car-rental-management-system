@@ -1,215 +1,303 @@
 {% extends "base.html" %}
 
+{% block title %}
+Rental Details
+{% endblock %}
+
 {% block content %}
 
-<h1>Rental Details</h1>
-
-<p>
-    <strong>Customer:</strong>
-    {{ rental.customer }}
-</p>
-
-<p>
-    <strong>Car:</strong>
-    {{ rental.car.brand }}
-    {{ rental.car.model }}
-</p>
-
-<p>
-    <strong>Plate Number:</strong>
-    {{ rental.car.plate_number }}
-</p>
-
-<p>
-    <strong>Rental Date:</strong>
-    {{ rental.rental_date }}
-</p>
-
-<p>
-    <strong>Expected Return:</strong>
-    {{ rental.expected_return_date }}
-</p>
-
-<p>
-    <strong>Actual Return:</strong>
-    {{ rental.actual_return_date|default:"Not returned yet" }}
-</p>
-
-<p>
-    <strong>Daily Price:</strong>
-    ₦{{ rental.daily_price|floatformat:2 }}
-</p>
-
-<p>
-    <strong>Total Cost:</strong>
-    ₦{{ rental.total_cost|floatformat:2 }}
-</p>
-
-<p>
-    <strong>Rental Status:</strong>
-    {{ rental.get_status_display }}
-</p>
+<h1 class="page-title">
+    Rental Details
+</h1>
 
 
-<hr>
+<!-- =========================
+     RENTAL INFORMATION
+========================= -->
 
-<h2>Payment Information</h2>
+<div class="card">
 
-<p>
-    <strong>Total Cost:</strong>
-    ₦{{ rental.total_cost|floatformat:2 }}
-</p>
+    <h2>
+        Rental Information
+    </h2>
 
-<p>
-    <strong>Amount Paid:</strong>
-    ₦{{ rental.amount_paid|floatformat:2 }}
-</p>
+    <p>
+        <strong>Customer:</strong>
+        {{ rental.customer.full_name }}
+    </p>
 
-<p>
-    <strong>Balance:</strong>
-    ₦{{ rental.balance|floatformat:2 }}
-</p>
+    <p>
+        <strong>Car:</strong>
+        {{ rental.car.brand }}
+        {{ rental.car.model }}
+    </p>
 
-<p>
-    <strong>Payment Status:</strong>
-    {{ rental.get_payment_status_display }}
-</p>
+    <p>
+        <strong>Plate Number:</strong>
+        {{ rental.car.plate_number }}
+    </p>
 
+    <p>
+        <strong>Rental Date:</strong>
+        {{ rental.rental_date }}
+    </p>
+
+    <p>
+        <strong>Expected Return:</strong>
+        {{ rental.expected_return_date }}
+    </p>
+
+    <p>
+        <strong>Actual Return:</strong>
+        {{ rental.actual_return_date|default:"Not returned yet" }}
+    </p>
+
+    <p>
+        <strong>Daily Price:</strong>
+        ₦{{ rental.daily_price|floatformat:2 }}
+    </p>
+
+    <p>
+        <strong>Total Cost:</strong>
+        ₦{{ rental.total_cost|floatformat:2 }}
+    </p>
+
+    <p>
+        <strong>Rental Status:</strong>
+
+        <span class="status-badge status-{{ rental.status }}">
+            {{ rental.get_status_display }}
+        </span>
+    </p>
+
+</div>
+
+
+<!-- =========================
+     PAYMENT INFORMATION
+========================= -->
+
+<div class="card">
+
+    <h2>
+        Payment Information
+    </h2>
+
+    <p>
+        <strong>Total Cost:</strong>
+        ₦{{ rental.total_cost|floatformat:2 }}
+    </p>
+
+    <p>
+        <strong>Amount Paid:</strong>
+        ₦{{ rental.amount_paid|floatformat:2 }}
+    </p>
+
+    <p>
+        <strong>Balance:</strong>
+        ₦{{ rental.balance|floatformat:2 }}
+    </p>
+
+    <p>
+        <strong>Payment Status:</strong>
+
+        <span class="status-badge status-{{ rental.payment_status }}">
+            {{ rental.get_payment_status_display }}
+        </span>
+    </p>
+
+</div>
+
+
+<!-- =========================
+     RECORD PAYMENT
+========================= -->
 
 {% if user.is_staff and rental.balance > 0 %}
 
-<hr>
+<div class="card">
 
-<h2>Record Payment</h2>
-
-<form
-    method="post"
-    action="{% url 'update_rental_payment' rental.pk %}"
->
-
-    {% csrf_token %}
-
-    <p>
-        <label for="amount">
-            Additional Payment:
-        </label>
-
-        <input
-            type="number"
-            id="amount"
-            name="amount"
-            min="0.01"
-            step="0.01"
-            max="{{ rental.balance }}"
-            required
-        >
-    </p>
-
-    <p>
-        Remaining Balance:
-        <strong>
-            ₦{{ rental.balance|floatformat:2 }}
-        </strong>
-    </p>
-
-    <button
-        type="submit"
-        class="btn"
-    >
+    <h2>
         Record Payment
-    </button>
+    </h2>
 
-</form>
+    <form
+        method="post"
+        action="{% url 'update_rental_payment' rental.pk %}"
+    >
 
-{% endif %}
-
-
-<hr>
-
-<a
-    href="{% url 'rental_receipt' rental.pk %}"
-    class="btn"
->
-    Print Receipt
-</a>
-
-
-{% if user.is_staff %}
-    {% if rental.status == "booked" %}
-
-        <form method="post" action="{% url 'start_rental' rental.pk %}" style="margin-top: 20px;">
-            {% csrf_token %}
-            <button type="submit" class="btn">
-                Start Rental
-            </button>
-        </form>
-
-    {% elif rental.status == "active" %}
-        <form
-            method="post"
-            action="{% url 'rental_return' rental.pk %}"
-            style="margin-top: 20px;"
-        >
-
-            {% csrf_token %}
-
-            <button
-                type="submit"
-                class="btn"
-            >
-                Return Car
-            </button>
-
-        </form>
-
-    {% elif rental.status == "returned" and rental.car.status == "returned" %}
-
-        <hr>
-
-        <h2>Car Inspection</h2>
+        {% csrf_token %}
 
         <p>
-            The car has been returned.
-            Inspect its condition before making it available again.
+
+            <label for="amount">
+                Additional Payment
+            </label>
+
+            <input
+                type="number"
+                id="amount"
+                name="amount"
+                min="0.01"
+                step="0.01"
+                max="{{ rental.balance }}"
+                required
+            >
+
         </p>
 
-        <form
-            method="post"
-            action="{% url 'inspect_returned_car' rental.pk %}"
-        >
-
-            {% csrf_token %}
-
-            <button
-                type="submit"
-                name="decision"
-                value="available"
-                class="btn"
-            >
-                ✓ Ready for Rental
-            </button>
-
-            <button
-                type="submit"
-                name="decision"
-                value="maintenance"
-                class="btn"
-            >
-                ⚠ Send to Maintenance
-            </button>
-
-        </form>
-
-    {% elif rental.status == "returned" %}
-
         <p>
+            Remaining Balance:
             <strong>
-                This rental has been completed.
+                ₦{{ rental.balance|floatformat:2 }}
             </strong>
         </p>
 
-    {% endif %}
+        <button
+            type="submit"
+            class="btn"
+        >
+            Record Payment
+        </button>
+
+    </form>
+
+</div>
 
 {% endif %}
+
+
+<!-- =========================
+     ACTIONS
+========================= -->
+
+<div class="card">
+
+    <h2>
+        Actions
+    </h2>
+
+    <a
+        href="{% url 'rental_receipt' rental.pk %}"
+        class="btn"
+    >
+        Print Receipt
+    </a>
+
+
+    {% if user.is_staff %}
+
+        <!-- BOOKED -->
+
+        {% if rental.status == "booked" %}
+
+            <form
+                method="post"
+                action="{% url 'start_rental' rental.pk %}"
+                style="display: inline;"
+            >
+
+                {% csrf_token %}
+
+                <button
+                    type="submit"
+                    class="btn"
+                >
+                    Start Rental
+                </button>
+
+            </form>
+
+
+        <!-- ACTIVE -->
+
+        {% elif rental.status == "active" %}
+
+            <form
+                method="post"
+                action="{% url 'rental_return' rental.pk %}"
+                style="display: inline;"
+            >
+
+                {% csrf_token %}
+
+                <button
+                    type="submit"
+                    class="btn"
+                >
+                    Return Car
+                </button>
+
+            </form>
+
+
+        <!-- RETURNED AND AWAITING INSPECTION -->
+
+        {% elif rental.status == "returned" and rental.car.status == "returned" %}
+
+            <hr>
+
+            <h2>
+                Car Inspection
+            </h2>
+
+            <p>
+                The car has been returned.
+                Inspect its condition before making it available again.
+            </p>
+
+            <form
+                method="post"
+                action="{% url 'inspect_returned_car' rental.pk %}"
+            >
+
+                {% csrf_token %}
+
+                <button
+                    type="submit"
+                    name="decision"
+                    value="available"
+                    class="btn"
+                >
+                    Ready for Rental
+                </button>
+
+                <button
+                    type="submit"
+                    name="decision"
+                    value="maintenance"
+                    class="btn"
+                >
+                    Send to Maintenance
+                </button>
+
+            </form>
+
+
+        <!-- COMPLETED -->
+
+        {% elif rental.status == "returned" %}
+
+            <p>
+                <strong>
+                    Rental completed and vehicle inspection processed.
+                </strong>
+            </p>
+
+        {% endif %}
+
+    {% endif %}
+
+</div>
+
+
+<br>
+
+<a
+    href="{% url 'rental_list' %}"
+    class="btn"
+>
+    Back to Rentals
+</a>
 
 {% endblock %}

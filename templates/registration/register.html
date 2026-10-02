@@ -1,148 +1,68 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "base.html" %}
 
-    <title>Create Account | Car Rental</title>
+{% block title %}
+Create Account
+{% endblock %}
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+{% block content %}
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            font-family: Arial, sans-serif;
-            background: #0b1220;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 30px 15px;
-        }
+<div class="card" style="max-width: 550px; margin: 40px auto;">
 
-        .register-card {
-            width: 100%;
-            max-width: 480px;
-            background: #111827;
-            border: 1px solid #1e293b;
-            border-radius: 14px;
-            padding: 35px;
-        }
+    <h1 class="page-title">
+        Create Account
+    </h1>
 
-        .register-card h1 {
-            margin-top: 0;
-            margin-bottom: 8px;
-            text-align: center;
-        }
+    <p>
+        Create your customer account to request and manage car rentals.
+    </p>
 
-        .subtitle {
-            text-align: center;
-            color: #94a3b8;
-            margin-bottom: 30px;
-        }
+    <hr>
 
-        form p {
-            margin-bottom: 18px;
-        }
+    <form method="POST">
 
-        label {
-            display: block;
-            margin-bottom: 7px;
-            font-weight: bold;
-        }
+        {% csrf_token %}
 
-        input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 7px;
-            border: 1px solid #334155;
-            background: #0f172a;
-            color: white;
-        }
 
-        .helptext {
-            display: block;
-            margin-top: 6px;
-            color: #94a3b8;
-            font-size: 13px;
-            line-height: 1.5;
-        }
+        {% if form.non_field_errors %}
 
-        ul.errorlist {
-            color: #f87171;
-            padding-left: 20px;
-        }
+            <div class="error-message">
+                {{ form.non_field_errors }}
+            </div>
 
-        button {
-            width: 100%;
-            padding: 13px;
-            border: none;
-            border-radius: 7px;
-            background: #2563eb;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+        {% endif %}
 
-        button:hover {
-            background: #1d4ed8;
-        }
 
-        .login-link {
-            text-align: center;
-            margin-top: 22px;
-            color: #94a3b8;
-        }
+        {{ form.as_p }}
 
-        .login-link a,
-        .back-home a {
-            color: #38bdf8;
-            text-decoration: none;
-        }
 
-        .back-home {
-            text-align: center;
-            margin-top: 15px;
-        }
-    </style>
-</head>
+        <button
+            type="submit"
+            class="btn"
+        >
+            Create Account
+        </button>
 
-<body>
+    </form>
 
-    <div class="register-card">
 
-        <h1>Create Account</h1>
+    <hr>
 
-        <p class="subtitle">
-            Create your customer account to request a car rental.
-        </p>
+    <p>
+        Already have an account?
 
-        <form method="POST">
+        <a href="{% url 'login' %}">
+            Login
+        </a>
+    </p>
 
-            {% csrf_token %}
 
-            {{ form.as_p }}
+    <a
+        href="{% url 'home' %}"
+        class="btn"
+    >
+        Back to Home
+    </a>
 
-            <button type="submit">
-                Create Account
-            </button>
+</div>
 
-        </form>
-
-        <div class="login-link">
-            Already have an account?
-            <a href="{% url 'login' %}">Login</a>
-        </div>
-
-        <div class="back-home">
-            <a href="{% url 'home' %}">← Back to Home</a>
-        </div>
-
-    </div>
-
-</body>
-</html>
+{% endblock %}

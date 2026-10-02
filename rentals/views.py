@@ -465,9 +465,8 @@ def rental_request_create(request, car_id):
     car = get_object_or_404(
         Car,
         pk=car_id,
-        status="available"
+        status__in=["available", "rented"]
     )
-
     
 
     if request.method == "POST":

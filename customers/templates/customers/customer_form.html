@@ -1,37 +1,65 @@
 {% extends "base.html" %}
 
-
 {% block title %}
-
-{% if customer %}
-    Edit Customer
-{% else %}
-    Add Customer
-{% endif %}
-
+    {% if customer %}
+        Edit Customer
+    {% else %}
+        Add Customer
+    {% endif %}
 {% endblock %}
-
 
 {% block content %}
 
 <h1 class="page-title">
-
-{% if customer %}
-    Edit Customer
-{% else %}
-    Add Customer
-{% endif %}
-
+    {% if customer %}
+        Edit Customer
+    {% else %}
+        Add New Customer
+    {% endif %}
 </h1>
 
 
 <div class="card">
 
+    {% if customer %}
+
+        <h2>
+            {{ customer.full_name }}
+        </h2>
+
+        <p>
+            Update the customer's information below.
+        </p>
+
+    {% else %}
+
+        <h2>
+            Customer Information
+        </h2>
+
+        <p>
+            Enter the customer's personal and contact information.
+        </p>
+
+    {% endif %}
+
+
     <form method="POST">
 
         {% csrf_token %}
 
+
+        {% if form.non_field_errors %}
+
+            <div class="error-message">
+                {{ form.non_field_errors }}
+            </div>
+
+        {% endif %}
+
+
         {{ form.as_p }}
+
 
         <button
             type="submit"
@@ -43,6 +71,27 @@
                 Save Customer
             {% endif %}
         </button>
+
+
+        {% if customer %}
+
+            <a
+                href="{% url 'customer_detail' customer.pk %}"
+                class="btn"
+            >
+                Cancel
+            </a>
+
+        {% else %}
+
+            <a
+                href="{% url 'customer_list' %}"
+                class="btn"
+            >
+                Cancel
+            </a>
+
+        {% endif %}
 
     </form>
 

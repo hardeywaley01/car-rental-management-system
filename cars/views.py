@@ -34,6 +34,10 @@ def dashboard(request):
         status="maintenance"
     ).count()
 
+    booked_rentals = Rental.objects.filter(
+        status="booked"
+    ).count()
+
     active_rentals = Rental.objects.filter(
         status="active"
     ).count()
@@ -60,6 +64,7 @@ def dashboard(request):
         "rented_cars": rented_cars,
         "returned_cars": returned_cars,
         "maintenance_cars": maintenance_cars,
+        "booked_rentals": booked_rentals,
         "active_rentals": active_rentals,
         "returned_rentals": returned_rentals,
         "pending_requests": pending_requests,
@@ -372,6 +377,10 @@ def reports(request):
 
     total_customers = Customer.objects.count()
 
+    booked_rentals = Rental.objects.filter(
+        status="booked"
+    ).count()
+
     active_rentals = Rental.objects.filter(
         status="active"
     ).count()
@@ -400,6 +409,7 @@ def reports(request):
         "maintenance_cars": maintenance_cars,
         "returned_cars": returned_cars,
         "total_customers": total_customers,
+        "booked_rentals": booked_rentals,
         "active_rentals": active_rentals,
         "returned_rentals": returned_rentals,
         "total_revenue": total_revenue,

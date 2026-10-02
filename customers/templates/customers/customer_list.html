@@ -9,22 +9,42 @@ Customers
 <h1 class="page-title">
     Customers
 </h1>
-<form method="GET">
 
-    <input
-        type="text"
-        name="search"
-        placeholder="Search customer..."
-        value="{{ search }}"
-    >
 
-    <button type="submit" class="btn">
-        Search
-    </button>
+<!-- SEARCH -->
 
-</form>
+<div class="card">
+
+    <form method="GET">
+
+        <input
+            type="text"
+            name="search"
+            value="{{ search }}"
+            placeholder="Search name, phone or license..."
+        >
+
+        <button
+            type="submit"
+            class="btn"
+        >
+            Search
+        </button>
+
+        <a
+            href="{% url 'customer_list' %}"
+            class="btn"
+        >
+            Clear
+        </a>
+
+    </form>
+
+</div>
+
 
 <br>
+
 <a
     href="{% url 'customer_create' %}"
     class="btn"
@@ -35,66 +55,68 @@ Customers
 <br>
 <br>
 
-<form method="GET">
 
-    <input
-        type="text"
-        name="search"
-        value="{{ search }}"
-        placeholder="Search name, phone or license..."
-    >
+<!-- CUSTOMER LIST -->
 
-    <button
-        type="submit"
-        class="btn"
-    >
-        Search
-    </button>
+{% if customers %}
 
-</form>
+    <div class="cards">
 
-<br>
+        {% for customer in customers %}
 
-{% for customer in customers %}
+            <div class="card">
 
-<div class="card">
+                <h2>
+                    {{ customer.full_name }}
+                </h2>
 
-    <h2>
-        {{ customer.full_name }}
-    </h2>
+                <p>
+                    <strong>Phone:</strong>
+                    {{ customer.phone|default:"Not provided" }}
+                </p>
 
-    <p>
-        <strong>Phone:</strong>
-        {{ customer.phone }}
-    </p>
+                <p>
+                    <strong>Email:</strong>
+                    {{ customer.email|default:"Not provided" }}
+                </p>
 
-    <p>
-        <strong>Email:</strong>
-        {{ customer.email|default:"Not provided" }}
-    </p>
+                <p>
+                    <strong>Driver's License:</strong>
+                    {{ customer.driver_license }}
+                </p>
 
-    <p>
-        <strong>Driver's License:</strong>
-        {{ customer.driver_license }}
-    </p>
+                <p>
+                    <strong>Address:</strong>
+                    {{ customer.address|default:"Not provided" }}
+                </p>
 
-    <a
-        href="{% url 'customer_detail' customer.pk %}"
-        class="btn"
-    >
-        View Customer
-    </a>
+                <a
+                    href="{% url 'customer_detail' customer.pk %}"
+                    class="btn"
+                >
+                    View Customer
+                </a>
 
-</div>
+            </div>
 
-<br>
+        {% endfor %}
 
-{% empty %}
+    </div>
 
-<p>
-    No customers found.
-</p>
+{% else %}
 
-{% endfor %}
+    <div class="card">
+
+        <h2>
+            No Customers Found
+        </h2>
+
+        <p>
+            No customers match the current search.
+        </p>
+
+    </div>
+
+{% endif %}
 
 {% endblock %}

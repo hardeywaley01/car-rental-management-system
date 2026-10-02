@@ -1,8 +1,18 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
+
+{% block title %}
+Cars
+{% endblock %}
 
 {% block content %}
 
-<h1>Cars</h1>
+<h1 class="page-title">
+    Cars
+</h1>
+
+
+<!-- SEARCH AND FILTER -->
+
 <div class="card">
 
     <form method="GET">
@@ -20,140 +30,195 @@
                 All Status
             </option>
 
-            <option value="available"
-                {% if status == "available" %}selected{% endif %}>
+            <option
+                value="available"
+                {% if status == "available" %}selected{% endif %}
+            >
                 Available
             </option>
 
-            <option value="rented"
-                {% if status == "rented" %}selected{% endif %}>
+            <option
+                value="rented"
+                {% if status == "rented" %}selected{% endif %}
+            >
                 Rented
             </option>
 
-            <option value="returned"
-                {% if status == "returned" %}selected{% endif %}>
+            <option
+                value="returned"
+                {% if status == "returned" %}selected{% endif %}
+            >
                 Returned
             </option>
 
-            <option value="maintenance"
-                {% if status == "maintenance" %}selected{% endif %}>
+            <option
+                value="maintenance"
+                {% if status == "maintenance" %}selected{% endif %}
+            >
                 Maintenance
             </option>
 
         </select>
 
-        <button type="submit" class="btn">
+        <button
+            type="submit"
+            class="btn"
+        >
             Search
         </button>
 
-        <a href="{% url 'car_list' %}" class="btn">
+        <a
+            href="{% url 'car_list' %}"
+            class="btn"
+        >
             Clear
         </a>
 
     </form>
 
 </div>
-<a href="{% url 'car_create' %}">
-    Add New Car
-</a>
-<form method="GET">
 
-    <input
-        type="text"
-        name="search"
-        placeholder="Search car..."
-        value="{{ search }}"
-    >
-
-    <button type="submit" class="btn">
-        Search
-    </button>
-
-</form>
 
 <br>
-<hr>
 
-<table border="1" cellpadding="10">
+<a
+    href="{% url 'car_create' %}"
+    class="btn"
+>
+    + Add New Car
+</a>
 
-    <thead>
-        <tr>
-            <th>Car</th>
-            <th>Plate Number</th>
-            <th>Year</th>
-            <th>Transmission</th>
-            <th>Fuel</th>
-            <th>Daily Price</th>
-            <th>Status</th>
-        </tr>
-    </thead>
+<br>
+<br>
 
-    <tbody>
 
-        {% for car in cars %}
+<!-- CAR LIST -->
 
-        <tr>
+{% if cars %}
 
-            <td>
-                {{ car.brand }} {{ car.model }}
-            </td>
+<div class="cards">
 
-            <td>
-                {{ car.plate_number }}
-            </td>
+    {% for car in cars %}
 
-            <td>
-                {{ car.year }}
-            </td>
+    <div class="card">
 
-            <td>
-                {{ car.get_transmission_display }}
-            </td>
+        {% if car.image %}
 
-            <td>
-                {{ car.get_fuel_type_display }}
-            </td>
+        <img
+            src="{{ car.image.url }}"
+            alt="{{ car.brand }} {{ car.model }}"
+            style="
+                width: 100%;
+                height: 220px;
+                object-fit: cover;
+                border-radius: 10px;
+                margin-bottom: 15px;
+            "
+        >
 
-            <td>
-                ₦{{ car.daily_price }}
-            </td>
+        {% endif %}
 
-            <td>
 
-                {% if car.status == "available" %}
+        <h2>
+            {{ car.brand }} {{ car.model }}
+        </h2>
 
-                    🟢 Available
 
-                {% elif car.status == "rented" %}
+        <p>
+            <strong>Plate Number:</strong>
+            {{ car.plate_number }}
+        </p>
 
-                    🔴 Rented
+        <p>
+            <strong>Year:</strong>
+            {{ car.year }}
+        </p>
 
-                {% elif car.status == "returned" %}
+        <p>
+            <strong>Color:</strong>
+            {{ car.color }}
+        </p>
 
-                    🟡 Returned
+        <p>
+            <strong>Transmission:</strong>
+            {{ car.get_transmission_display }}
+        </p>
 
-                {% elif car.status == "maintenance" %}
+        <p>
+            <strong>Fuel:</strong>
+            {{ car.get_fuel_type_display }}
+        </p>
 
-                    🔧 Available but Not for Rent
+        <p>
+            <strong>Seats:</strong>
+            {{ car.seats }}
+        </p>
 
-                {% endif %}
+        <p>
+            <strong>Daily Price:</strong>
+            ₦{{ car.daily_price|floatformat:2 }}
+        </p>
 
-            </td>
+        <p>
+            <strong>Status:</strong>
 
-        </tr>
+            <span class="status-badge status-{{ car.status }}">
+                {{ car.get_status_display }}
+            </span>
+        </p>
 
-        {% empty %}
 
-        <tr>
-            <td colspan="7">
-                No cars have been added yet.
-            </td>
-        </tr>
+        {% if car.status == "maintenance" %}
 
-        {% endfor %}
+        <p>
+            This vehicle is currently unavailable for rental.
+        </p>
 
-    </tbody>
+        {% elif car.status == "returned" %}
 
-</table>
+        <p>
+            This vehicle has been returned and may be awaiting inspection.
+        </p>
+
+        {% endif %}
+
+
+        <a
+            href="{% url 'car_detail' car.pk %}"
+            class="btn"
+        >
+            View Details
+        </a>
+
+        <a
+            href="{% url 'car_edit' car.pk %}"
+            class="btn"
+        >
+            Edit
+        </a>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+
+{% else %}
+
+<div class="card">
+
+    <h2>
+        No Cars Found
+    </h2>
+
+    <p>
+        No cars match the current search or filter.
+    </p>
+
+</div>
+
+{% endif %}
 
 {% endblock %}
+

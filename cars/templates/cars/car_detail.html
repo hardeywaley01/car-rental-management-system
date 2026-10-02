@@ -1,17 +1,14 @@
-{% extends "base.html" %}
-
+﻿{% extends "base.html" %}
 
 {% block title %}
 {{ car.brand }} {{ car.model }}
 {% endblock %}
-
 
 {% block content %}
 
 <h1 class="page-title">
     Car Details
 </h1>
-
 
 <div class="card">
 
@@ -22,20 +19,19 @@
             alt="{{ car.brand }} {{ car.model }}"
             style="
                 width: 100%;
-                max-width: 500px;
+                max-width: 600px;
+                height: 350px;
+                object-fit: cover;
                 border-radius: 10px;
+                margin-bottom: 20px;
             "
         >
-
-        <br>
-        <br>
 
     {% endif %}
 
 
     <h2>
-        {{ car.brand }}
-        {{ car.model }}
+        {{ car.brand }} {{ car.model }}
     </h2>
 
 
@@ -44,30 +40,75 @@
         {{ car.year }}
     </p>
 
-
     <p>
         <strong>Plate Number:</strong>
         {{ car.plate_number }}
     </p>
 
+    <p>
+        <strong>Color:</strong>
+        {{ car.color }}
+    </p>
+
+    <p>
+        <strong>Transmission:</strong>
+        {{ car.get_transmission_display }}
+    </p>
+
+    <p>
+        <strong>Fuel Type:</strong>
+        {{ car.get_fuel_type_display }}
+    </p>
+
+    <p>
+        <strong>Seats:</strong>
+        {{ car.seats }}
+    </p>
 
     <p>
         <strong>Daily Price:</strong>
-        ₦{{ car.daily_price }}
+        ₦{{ car.daily_price|floatformat:2 }}
     </p>
-
 
     <p>
         <strong>Status:</strong>
-        {{ car.get_status_display }}
+
+        <span class="status-badge status-{{ car.status }}">
+            {{ car.get_status_display }}
+        </span>
     </p>
+
+
+    {% if car.status == "maintenance" %}
+
+        <p>
+            This vehicle is currently under maintenance
+            and is not available for rental.
+        </p>
+
+    {% elif car.status == "rented" %}
+
+        <p>
+            This vehicle is currently rented.
+        </p>
+
+    {% elif car.status == "returned" %}
+
+        <p>
+            This vehicle has been returned and may be
+            awaiting inspection.
+        </p>
+
+    {% endif %}
 
 
     <p>
-        <strong>Description:</strong>
+        <strong>Description:</strong><br>
         {{ car.description|default:"No description provided." }}
     </p>
 
+
+    <br>
 
     <a
         href="{% url 'car_edit' car.pk %}"
@@ -76,13 +117,14 @@
         Edit Car
     </a>
 
-
     <a
         href="{% url 'car_list' %}"
+        class="btn"
     >
-        ← Back to Cars
+        Back to Cars
     </a>
 
 </div>
 
 {% endblock %}
+
